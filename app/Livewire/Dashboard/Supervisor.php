@@ -23,6 +23,7 @@ class Supervisor extends Component
             'pendingVerifications' => 4,
         ];
 
+        
         $this->students = [
             [
                 'name' => 'John Doe',
