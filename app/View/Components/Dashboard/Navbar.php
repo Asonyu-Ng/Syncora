@@ -11,10 +11,17 @@ class Navbar extends Component
     public int $notificationCount = 0;
     public array $notifications = [];
     public string $currentPage = '';
+    public string $pageTitle = '';
+    public array $breadcrumbs = [];
 
-    public function __construct()
+    public function __construct(?string $pageTitle = null, ?array $breadcrumbs = null)
     {
-        $this->currentPage = $this->resolveCurrentPage();
+        $this->pageTitle = $pageTitle ?: $this->resolveCurrentPage();
+        $this->currentPage = $this->pageTitle;
+        $this->breadcrumbs = $breadcrumbs ?: [
+            ['label' => 'Dashboards', 'href' => '/__dashboards'],
+            ['label' => $this->pageTitle, 'href' => null],
+        ];
         $this->notifications = $this->getMockNotifications();
         $this->notificationCount = collect($this->notifications)->where('read', false)->count();
     }
@@ -122,4 +129,3 @@ class Navbar extends Component
         return view('components.dashboard.navbar');
     }
 }
-

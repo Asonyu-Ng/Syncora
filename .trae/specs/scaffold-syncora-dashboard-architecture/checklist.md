@@ -1,0 +1,14 @@
+- [x] Shared dashboard shell exists (sidebar + topbar + content) and is used by all role pages
+- [x] Mobile sidebar works and does not block navigation on small screens
+- [x] Notifications dropdown exists and renders for all roles
+- [x] Profile dropdown exists and provides logout/profile/settings entry points (Settings routes by role)
+- [x] Reusable widgets exist: stats card, widget container, empty/loading states
+- [x] Reusable table exists with pagination and empty state
+- [x] Student pages exist and have routes: dashboard, internship search/details, applications, tasks, logbook, reports, profile/settings
+- [x] Supervisor pages exist and have routes: dashboard, students, tasks, logbook approvals, evaluations, monitoring, reports, calendar, profile/settings
+- [x] Company pages exist and have routes: dashboard, post internship, internships, applicants, active interns, tasks, evaluations, reports, profile/settings
+- [x] Admin pages exist and have routes: dashboard, users, universities, companies, internships, analytics, reports, notifications, settings, logs
+- [x] Service layer classes exist with method signatures for core workflows and Livewire calls services (no heavy business logic in views)
+- [x] Domain models + relationships exist and migrations run cleanly on MySQL
+- [x] Role middleware + policies enforce access rules (privileged pages admin-only)
+- [x] Tests cover role-based access to dashboards/pages and pass in CI/local

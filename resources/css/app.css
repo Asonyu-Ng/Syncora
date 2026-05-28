@@ -1,6 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --sync-radius-sm: 0.5rem;
+        --sync-radius-md: 0.75rem;
+        --sync-radius-lg: 1rem;
+        --sync-radius-xl: 1.25rem;
+        --sync-radius-2xl: 1.5rem;
+
+        --sync-shadow-soft: 0 1px 2px 0 rgb(15 23 42 / 0.06), 0 1px 1px -1px rgb(15 23 42 / 0.06);
+        --sync-shadow-card: 0 8px 24px -12px rgb(15 23 42 / 0.18), 0 2px 8px -4px rgb(15 23 42 / 0.12);
+        --sync-shadow-focus: 0 0 0 4px rgb(99 102 241 / 0.25);
+    }
+
+    body {
+        @apply font-sans text-neutral-900 bg-neutral-50 antialiased;
+    }
+}
 
 [x-cloak] {
     display: none !important;

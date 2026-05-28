@@ -7,7 +7,7 @@
 
         <x-auth-session-status :status="session('status')" />
 
-        <form method="POST" action="{{ route('login') }}" class="space-y-4" x-data="{ show: false }">
+        <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
 
             <div>
@@ -25,10 +25,9 @@
                 </div>
 
                 <div class="relative mt-1">
-                    <x-text-input id="password" type="password" name="password" class="block w-full pr-14" required autocomplete="current-password" x-show="!show" x-cloak />
-                    <x-text-input id="password_text" type="text" name="password" class="block w-full pr-14" required autocomplete="current-password" x-show="show" x-cloak />
-                    <button type="button" class="absolute inset-y-0 right-0 inline-flex items-center px-3 text-sm font-medium text-slate-600 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md" x-on:click="show = !show" x-bind:aria-pressed="show.toString()" x-bind:aria-label="show ? 'Hide password' : 'Show password'">
-                        <span x-text="show ? 'Hide' : 'Show'"></span>
+                    <x-text-input id="password" type="password" name="password" class="block w-full pr-14" required autocomplete="current-password" />
+                    <button type="button" class="absolute inset-y-0 right-0 inline-flex items-center px-3 text-sm font-medium text-slate-600 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-500/25 rounded-xl" onclick="const i=document.getElementById('password'); if(i){ i.type = i.type === 'password' ? 'text' : 'password'; }">
+                        <span>Show</span>
                     </button>
                 </div>
 
@@ -42,9 +41,9 @@
                 </label>
             </div>
 
-            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-600/30 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <x-primary-button class="w-full">
                 Sign in
-            </button>
+            </x-primary-button>
         </form>
 
         <p class="text-center text-sm text-slate-600">

@@ -1,0 +1,13 @@
+- [x] Token set documented: colors, typography, spacing, radius, shadows, motion
+- [x] Auth layout rules documented (mobile-first)
+- [x] Dashboard shell layout rules documented (sidebar/topbar/content + responsive behavior)
+- [x] Button system documented (variants + states)
+- [x] Input system documented (types + validation states)
+- [x] Card system documented (structure + density + spacing)
+- [x] Table system documented (headers/rows/hover/responsive + empty/loading)
+- [x] Dropdown system documented (alignment + item states)
+- [x] Modal system documented (sizing + backdrop + confirm patterns)
+- [x] Notification system documented (badge + dropdown list rules)
+- [x] Chart styling guidelines documented
+- [x] Accessibility baseline documented (focus ring, keyboard nav, contrast)
+- [x] Tailwind conventions documented (token mapping + avoid list)

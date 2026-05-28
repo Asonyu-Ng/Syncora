@@ -10,12 +10,28 @@ class StatsCard extends Component
 {
     public function __construct(
         public string $title = '',
-        public string $value = '0',
+        public string|int|float|null $value = '0',
         public string $trend = '0%',
         public string $trendDirection = 'neutral',
         public string $icon = 'chart-bar',
-        public string $color = 'blue'
+        public string $color = 'blue',
+        public bool $loading = false,
+        public string $emptyValue = '—'
     ) {}
+
+    public function isEmptyValue(): bool
+    {
+        return $this->value === null || $this->value === '';
+    }
+
+    public function getDisplayValue(): string
+    {
+        if ($this->isEmptyValue()) {
+            return $this->emptyValue;
+        }
+
+        return (string) $this->value;
+    }
 
     public function getTrendColor(): string
     {
@@ -54,4 +70,3 @@ class StatsCard extends Component
         return view('components.stats-card');
     }
 }
-
