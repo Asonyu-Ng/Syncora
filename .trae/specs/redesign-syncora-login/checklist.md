@@ -1,0 +1,14 @@
+# Checklist
+- [x] `/login` renders the new split-screen SaaS layout and is mobile responsive
+- [x] Login page contains no role selector or role labels
+- [x] Left panel includes logo, tagline, description, feature highlights, and a professional visual/gradient treatment
+- [x] Right panel includes: Email/Matricule input, password input, visibility toggle, remember me, forgot password, submit button, register link
+- [x] Loading state disables submit and shows progress feedback
+- [x] Validation errors render inline and are accessible (labels + focus visible)
+- [x] Rate limiting is enforced for failed attempts (Breeze-compatible behavior)
+- [x] Login accepts email for all roles and matricule for students only
+- [x] Matricule login for non-students is rejected with a generic error
+- [x] After login, user is redirected automatically to the correct role dashboard (student/supervisor/company/admin)
+- [x] Registration is the only place role is chosen/assigned pre-auth; login remains role-agnostic
+- [x] Database has `users.matricule` and student users can store it
+- [x] No secrets are committed; `.env` remains ignored

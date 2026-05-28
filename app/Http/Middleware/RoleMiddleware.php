@@ -14,11 +14,7 @@ class RoleMiddleware
         $user = $request->user();
         $currentRole = $this->resolveRole($request);
 
-        if (!$user && !$currentRole) {
-            if (app()->isLocal() || config('app.debug')) {
-                return $next($request);
-            }
-
+        if (!$user) {
             if (Route::has('login')) {
                 return redirect()->route('login');
             }
@@ -27,18 +23,10 @@ class RoleMiddleware
         }
 
         if (!empty($roles) && $currentRole && !in_array($currentRole, $roles, true)) {
-            if (app()->isLocal() || config('app.debug')) {
-                return $next($request);
-            }
-
             return redirect()->to($this->getDashboardUrl($currentRole));
         }
 
         if (!empty($roles) && !$currentRole) {
-            if (app()->isLocal() || config('app.debug')) {
-                return $next($request);
-            }
-
             abort(403);
         }
 
@@ -77,4 +65,3 @@ class RoleMiddleware
         return null;
     }
 }
-

@@ -22,6 +22,7 @@ class DemoRoleUsersSeeder extends Seeder
                 'name' => 'Student User',
                 'email' => 'student@syncora.test',
                 'role' => 'student',
+                'matricule' => 'STU-000001',
             ],
             [
                 'name' => 'Supervisor User',
@@ -42,10 +43,10 @@ class DemoRoleUsersSeeder extends Seeder
                     'name' => $user['name'],
                     'password' => $password,
                     'role' => $user['role'],
+                    'matricule' => $user['matricule'] ?? null,
                     'email_verified_at' => now(),
                 ],
             );
         }
     }
 }
-

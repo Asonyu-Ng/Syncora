@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Test User',
                 'password' => User::factory()->make()->password,
                 'role' => 'student',
+                'matricule' => 'STU-TEST-0001',
                 'email_verified_at' => now(),
             ],
         );
