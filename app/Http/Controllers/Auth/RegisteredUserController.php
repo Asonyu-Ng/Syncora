@@ -31,11 +31,15 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $allowedRoles = Auth::check() && Auth::user()->role === 'admin'
+            ? ['student', 'supervisor', 'company', 'admin']
+            : ['student'];
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', Rule::in(['student', 'supervisor', 'company', 'admin'])],
+            'role' => ['required', 'string', Rule::in($allowedRoles)],
             'matricule' => ['nullable', 'string', 'max:50', 'unique:'.User::class, 'required_if:role,student'],
         ]);
 

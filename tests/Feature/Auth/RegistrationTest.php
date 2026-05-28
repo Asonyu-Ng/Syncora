@@ -14,6 +14,7 @@ class RegistrationTest extends TestCase
         $response = $this->get('/register');
 
         $response->assertStatus(200);
+        $response->assertDontSee('value="admin"', false);
     }
 
     public function test_new_users_can_register(): void
@@ -29,5 +30,19 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_public_registration_cannot_create_admin_users(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Evil Admin',
+            'email' => 'evil@example.com',
+            'role' => 'admin',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('role');
+        $this->assertGuest();
     }
 }

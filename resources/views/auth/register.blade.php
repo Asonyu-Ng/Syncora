@@ -1,6 +1,7 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}" x-data="{ role: @js(old('role', 'student')) }">
+    <form method="POST" action="{{ route('register') }}">
         @csrf
+        <input type="hidden" name="role" value="student" />
 
         <!-- Name -->
         <div>
@@ -10,19 +11,8 @@
         </div>
 
         <div class="mt-4">
-            <x-input-label for="role" :value="__('Role')" />
-            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" x-model="role" required>
-                <option value="student">{{ __('Student') }}</option>
-                <option value="supervisor">{{ __('Supervisor') }}</option>
-                <option value="company">{{ __('Company') }}</option>
-                <option value="admin">{{ __('Admin') }}</option>
-            </select>
-            <x-input-error :messages="$errors->get('role')" class="mt-2" />
-        </div>
-
-        <div class="mt-4" x-show="role === 'student'" x-cloak>
             <x-input-label for="matricule" :value="__('Matricule')" />
-            <x-text-input id="matricule" class="block mt-1 w-full" type="text" name="matricule" :value="old('matricule')" x-bind:required="role === 'student'" autocomplete="off" />
+            <x-text-input id="matricule" class="block mt-1 w-full" type="text" name="matricule" :value="old('matricule')" required autocomplete="off" />
             <x-input-error :messages="$errors->get('matricule')" class="mt-2" />
         </div>
 
