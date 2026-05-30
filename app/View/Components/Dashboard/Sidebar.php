@@ -73,19 +73,19 @@ class Sidebar extends Component
         if ($role === 'student') {
             $items = array_merge($items, [
                 [
-                    'label' => 'Internship Search',
+                    'label' => 'Find Internships',
                     'icon' => 'briefcase',
                     'href' => $this->routeUrl('student.internships.search', '/student/internships'),
                     'active' => request()->routeIs('student.internships.*'),
                 ],
                 [
-                    'label' => 'Applications',
+                    'label' => 'My Applications',
                     'icon' => 'document',
                     'href' => $this->routeUrl('student.applications.index', '/student/applications'),
                     'active' => request()->routeIs('student.applications.*'),
                 ],
                 [
-                    'label' => 'Task Board',
+                    'label' => 'Tasks',
                     'icon' => 'check-circle',
                     'href' => $this->routeUrl('student.tasks.board', '/student/tasks'),
                     'active' => request()->routeIs('student.tasks.*'),
@@ -97,7 +97,7 @@ class Sidebar extends Component
                     'active' => request()->routeIs('student.logbook.*'),
                 ],
                 [
-                    'label' => 'AI Reports',
+                    'label' => 'Reports',
                     'icon' => 'chart-bar',
                     'href' => $this->routeUrl('student.reports.ai', '/student/ai-reports'),
                     'active' => request()->routeIs('student.reports.*'),

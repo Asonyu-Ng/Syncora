@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             DemoInternshipsSeeder::class,
             DemoStudentApplicationsSeeder::class,
             DemoStudentTasksSeeder::class,
+            DemoStudentLogbooksSeeder::class,
+            DemoStudentReportsSeeder::class,
         ]);
     }
 }
