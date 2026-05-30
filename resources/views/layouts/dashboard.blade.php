@@ -14,7 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-50">
+<body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
     <div
         x-data="{ sidebarOpen: false }"
         @toggle-sidebar.window="sidebarOpen = !sidebarOpen"
@@ -26,8 +26,8 @@
         <div class="flex-1 min-w-0 flex flex-col transition-all duration-300">
             <x-dashboard.navbar :page-title="($title ?? null)" :breadcrumbs="($breadcrumbs ?? null)" />
 
-            <main class="flex-1 py-8 px-4 sm:px-6 lg:px-8">
-                <div class="max-w-7xl mx-auto">
+            <main class="flex-1 min-w-0">
+                <div class="mx-auto w-full max-w-7xl p-3 sm:p-4 lg:p-6 min-w-0">
                     @yield('content')
                 </div>
             </main>

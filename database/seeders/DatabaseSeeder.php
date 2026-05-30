@@ -26,6 +26,11 @@ class DatabaseSeeder extends Seeder
             ],
         );
 
-        $this->call(DemoRoleUsersSeeder::class);
+        $this->call([
+            DemoRoleUsersSeeder::class,
+            DemoInternshipsSeeder::class,
+            DemoStudentApplicationsSeeder::class,
+            DemoStudentTasksSeeder::class,
+        ]);
     }
 }

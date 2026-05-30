@@ -1,0 +1,7 @@
+- [x] Sidebar matches reference style (light background, indigo active pill, consistent icons/spacing)
+- [x] Topbar matches reference style (72px, search, notifications badge, user identity block)
+- [x] Content area has consistent padding across breakpoints and no blank gutter beside sidebar
+- [x] Mobile sidebar toggle works with backdrop close
+- [x] Student/Supervisor/Company/Admin dashboards render without layout regressions
+- [x] Design tokens are used (no ad-hoc colors for shell)
+- [x] `php artisan test` passes

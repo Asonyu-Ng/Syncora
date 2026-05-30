@@ -1,0 +1,9 @@
+- [x] Student “Find Internships” page matches the reference layout (filters, results list, right rail)
+- [x] Filters work: keywords, category, location, type, duration, postedWithin
+- [x] Sorting works (newest/oldest) and pagination preserves filters
+- [x] Save Search persists the current filter payload for the student
+- [x] Bookmark toggle saves/unsaves internships and updates icon state
+- [x] Apply Now creates an Application and prevents duplicates
+- [x] Demo seeders create student profile + internships so the page is usable locally
+- [x] Mobile layout works without horizontal overflow
+- [x] `php artisan test` passes

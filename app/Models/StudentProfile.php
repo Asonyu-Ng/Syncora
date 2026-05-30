@@ -26,6 +26,16 @@ class StudentProfile extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function savedSearches(): HasMany
+    {
+        return $this->hasMany(SavedSearch::class);
+    }
+
+    public function savedInternships(): HasMany
+    {
+        return $this->hasMany(SavedInternship::class);
+    }
+
     public function applications(): HasMany
     {
         return $this->hasMany(Application::class);
@@ -51,4 +61,3 @@ class StudentProfile extends Model
         return $this->hasMany(Report::class);
     }
 }
-

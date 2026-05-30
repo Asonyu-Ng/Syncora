@@ -1,0 +1,11 @@
+- [x] Student “My Applications” page matches the reference layout (tabs, table/list, right rail)
+- [x] Tabs filter real applications by status and show correct counts
+- [x] Search filters by internship title/company name
+- [x] Pagination works and preserves filter/search state
+- [x] Application Summary card counts are accurate
+- [x] Withdraw action updates status and prevents invalid transitions
+- [x] “View Details” navigates to internship details for the application
+- [x] Accepted rows show “View Offer” placeholder action
+- [x] Demo seed data produces applications in multiple statuses
+- [x] Mobile layout works without horizontal overflow
+- [x] `php artisan test` passes
