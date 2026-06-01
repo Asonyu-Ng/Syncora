@@ -10,6 +10,7 @@ use App\Models\StudentProfile;
 use App\Services\InternshipService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -133,11 +134,22 @@ class InternshipSearch extends Component
                     'status' => 'applied',
                 ]
             );
-        } catch (QueryException) {
+        } catch (QueryException $e) {
+            if (! $this->isUniqueConstraintViolation($e)) {
+                report($e);
+                session()->flash('message', 'Unable to submit application right now. Please try again.');
+                return;
+            }
+
             $application = Application::query()
                 ->where('student_profile_id', $profile->id)
                 ->where('internship_id', $internshipId)
                 ->first();
+
+            if (! $application) {
+                session()->flash('message', 'Unable to submit application right now. Please try again.');
+                return;
+            }
         }
 
         if ($application?->wasRecentlyCreated) {
@@ -199,6 +211,28 @@ class InternshipSearch extends Component
         $user = auth()->user();
 
         return $user->studentProfile()->firstOrCreate();
+    }
+
+    private function isUniqueConstraintViolation(QueryException $e): bool
+    {
+        $errorInfo = $e->errorInfo ?? [];
+        $sqlState = $errorInfo[0] ?? null;
+        $driverCode = $errorInfo[1] ?? null;
+        $message = Str::lower($e->getMessage());
+
+        if ($sqlState === '23505') {
+            return true;
+        }
+
+        if ($sqlState === '23000' && in_array($driverCode, [1062, 19], true)) {
+            return true;
+        }
+
+        if (str_contains($message, 'unique constraint') || str_contains($message, 'duplicate')) {
+            return true;
+        }
+
+        return false;
     }
 
     private function currentSearchPayload(): array
