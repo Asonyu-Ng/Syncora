@@ -73,7 +73,17 @@ class ScaffoldedRoutesSmokeTest extends TestCase
 
             $this->actingAs($user)->get('/dashboard')->assertRedirect("/{$role}/dashboard");
             $this->actingAs($user)->get('/__dashboards')->assertOk();
-            $this->actingAs($user)->get('/profile')->assertOk();
+            $this->actingAs($user)->get('/profile')->assertRedirect(match ($role) {
+                'student' => '/student/profile',
+                'supervisor' => '/supervisor/profile',
+                'company' => '/company/profile',
+                default => '/account',
+            });
+            if ($role === 'student') {
+                $this->actingAs($user)->get('/account')->assertRedirect('/student/profile');
+            } else {
+                $this->actingAs($user)->get('/account')->assertOk();
+            }
 
             foreach ($routes as $uri) {
                 $this->actingAs($user)->get($uri)->assertOk();

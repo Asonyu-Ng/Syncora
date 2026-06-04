@@ -5,6 +5,22 @@
     $roleLabel = $user?->role ? Str::title($user->role) : 'User';
 
     $role = $user?->role;
+    $profileRouteName = match ($role) {
+        'student' => 'student.profile',
+        'supervisor' => 'supervisor.profile',
+        'company' => 'company.profile',
+        default => null,
+    };
+    $profileFallbackPath = match ($role) {
+        'student' => '/student/profile',
+        'supervisor' => '/supervisor/profile',
+        'company' => '/company/profile',
+        default => null,
+    };
+    $profileHref = ($profileRouteName && Route::has($profileRouteName))
+        ? route($profileRouteName)
+        : ($profileFallbackPath ?? (Route::has('profile.edit') ? route('profile.edit') : '#'));
+
     $settingsRouteName = match ($role) {
         'student' => 'student.settings',
         'supervisor' => 'supervisor.settings',
@@ -59,7 +75,7 @@
         </div>
 
         <a
-            href="{{ Route::has('profile.edit') ? route('profile.edit') : '#' }}"
+            href="{{ $profileHref }}"
             class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
         >
             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -5,11 +5,12 @@
             <p class="mt-2 text-sm text-neutral-600">View and manage your personal information and academic details.</p>
         </div>
 
-        <button type="button" wire:click="openEditProfile" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
+        <button type="button" wire:click="{{ $tab === 'academic' ? 'openEditAcademicInfo' : 'openEditProfile' }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1 0v14m0-14l-7 7m7-7l7 7" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l9.932-9.931z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 7.125L16.875 4.5" />
             </svg>
-            Edit Profile
+            {{ $tab === 'academic' ? 'Edit Academic Info' : 'Edit Profile' }}
         </button>
     </div>
 
@@ -182,29 +183,144 @@
             @elseif($tab === 'academic')
                 <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
                     <div class="px-5 py-4 sm:px-6 border-b border-neutral-200">
-                        <h2 class="text-sm font-semibold text-neutral-900">Academic Information</h2>
-                        <p class="mt-1 text-sm text-neutral-600">Update your academic details used for internship verification.</p>
+                        <h2 class="text-sm font-semibold text-neutral-900">Academic Details</h2>
+                        <p class="mt-1 text-sm text-neutral-600">Your academic information as registered by your institution.</p>
                     </div>
-                    <div class="divide-y divide-neutral-100">
-                        <div class="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-3 sm:items-center sm:px-6">
-                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Institution</div>
-                            <div class="text-sm font-semibold text-neutral-900 sm:col-span-2">{{ $academicSummary['institution'] ?? '—' }}</div>
+
+                    <div class="grid grid-cols-1 divide-y divide-neutral-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+                        <div class="space-y-5 px-5 py-5 sm:px-6">
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Institution</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['institution'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Faculty</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['faculty'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M5 5h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Department</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['department'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Program</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['program'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Level</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['level'] ?? '—' }}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-3 sm:items-center sm:px-6">
-                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Faculty</div>
-                            <div class="text-sm font-semibold text-neutral-900 sm:col-span-2">{{ $academicSummary['faculty'] ?? '—' }}</div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-3 sm:items-center sm:px-6">
-                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Department</div>
-                            <div class="text-sm font-semibold text-neutral-900 sm:col-span-2">{{ $academicSummary['department'] ?? '—' }}</div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-3 sm:items-center sm:px-6">
-                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Level</div>
-                            <div class="text-sm font-semibold text-neutral-900 sm:col-span-2">{{ $academicSummary['level'] ?? '—' }}</div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-2 px-5 py-4 sm:grid-cols-3 sm:items-center sm:px-6">
-                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Academic Year</div>
-                            <div class="text-sm font-semibold text-neutral-900 sm:col-span-2">{{ $academicSummary['academic_year'] ?? '—' }}</div>
+
+                        <div class="space-y-5 px-5 py-5 sm:px-6">
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M5 5h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Matricule</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['matricule'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M5 5h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Academic Year</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['academic_year'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M5 5h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Entry Year</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['entry_year'] ?? '—' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-3.866 0-7 1.79-7 4v4h14v-4c0-2.21-3.134-4-7-4z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8a3 3 0 100-6 3 3 0 000 6z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Current CGPA</div>
+                                    <div class="mt-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-neutral-900">
+                                        <span>{{ $academicDetails['cgpa'] ?? '—' }}</span>
+                                        @if(!empty($academicDetails['cgpa_badge']))
+                                            <span class="inline-flex items-center rounded-full bg-success-50 px-2.5 py-1 text-xs font-semibold text-success-700 ring-1 ring-inset ring-success-100">
+                                                {{ $academicDetails['cgpa_badge'] }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M5 5h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Expected Graduation</div>
+                                    <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $academicDetails['expected_graduation'] ?? '—' }}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -232,93 +348,220 @@
         </div>
 
         <aside class="space-y-6 lg:col-span-4">
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-                <div class="flex items-start gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h2 class="text-sm font-semibold text-neutral-900">Academic Summary</h2>
-                        <div class="mt-4 space-y-3 text-sm font-semibold text-neutral-700">
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-neutral-500">Institution</span>
-                                <span class="text-neutral-900 truncate">{{ $academicSummary['institution'] ?? '—' }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-neutral-500">Faculty</span>
-                                <span class="text-neutral-900 truncate">{{ $academicSummary['faculty'] ?? '—' }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-neutral-500">Department</span>
-                                <span class="text-neutral-900 truncate">{{ $academicSummary['department'] ?? '—' }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-neutral-500">Level</span>
-                                <span class="text-neutral-900 truncate">{{ $academicSummary['level'] ?? '—' }}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-neutral-500">Academic Year</span>
-                                <span class="text-neutral-900 truncate">{{ $academicSummary['academic_year'] ?? '—' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-                <div class="flex items-start gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-700">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.105 0 2-.895 2-2V7a2 2 0 00-4 0v2c0 1.105.895 2 2 2zm0 0v2m8 4v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                        </svg>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <h2 class="text-sm font-semibold text-neutral-900">Account Security</h2>
-                        <p class="mt-2 text-sm text-neutral-600">Keep your account secure and protect your personal information.</p>
-                        <a href="{{ route('profile.edit') }}" class="mt-4 inline-flex h-11 w-full items-center justify-center rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
-                            Change Password
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-                <h2 class="text-sm font-semibold text-neutral-900">Profile Completion</h2>
-                <div class="mt-6 flex items-center gap-6">
-                    <div class="relative h-28 w-28 shrink-0 rounded-full" style="background: {{ $completion['style'] }};">
-                        <div class="absolute inset-3 rounded-full bg-white"></div>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <div class="text-2xl font-semibold text-neutral-900">{{ $completion['percent'] }}%</div>
-                            <div class="text-xs font-semibold text-neutral-500">Complete</div>
-                        </div>
-                    </div>
-
-                    <div class="min-w-0 space-y-2 text-sm font-semibold">
-                        @foreach($completion['items'] as $item)
-                            <div class="flex items-center justify-between gap-3">
-                                <span class="text-neutral-700">{{ $item['label'] }}</span>
-                                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full {{ $item['done'] ? 'bg-success-50 text-success-700' : 'bg-neutral-100 text-neutral-400' }}">
-                                    @if($item['done'])
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    @else
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                        </svg>
-                                    @endif
+            @if($tab === 'academic')
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                    <h2 class="text-sm font-semibold text-neutral-900">Academic Summary</h2>
+                    <div class="mt-5 space-y-4 text-sm font-semibold">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2 text-neutral-600">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
+                                    </svg>
                                 </span>
+                                Total Credit Units Earned
+                            </div>
+                            <span class="text-neutral-900">{{ $academicSidebar['total_credit_units_earned'] ?? '—' }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2 text-neutral-600">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-3.866 0-7 1.79-7 4v4h14v-4c0-2.21-3.134-4-7-4z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8a3 3 0 100-6 3 3 0 000 6z" />
+                                    </svg>
+                                </span>
+                                CGPA
+                            </div>
+                            <span class="text-neutral-900">{{ $academicSidebar['cgpa'] ?? '—' }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2 text-neutral-600">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5-1a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                Academic Standing
+                            </div>
+                            <span class="text-success-700">{{ $academicSidebar['academic_standing'] ?? '—' }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2 text-neutral-600">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                </span>
+                                Class
+                            </div>
+                            <span class="text-neutral-900">{{ $academicSidebar['class'] ?? '—' }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2 text-neutral-600">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
+                                    </svg>
+                                </span>
+                                Total Courses Completed
+                            </div>
+                            <span class="text-neutral-900">{{ $academicSidebar['total_courses_completed'] ?? '—' }}</span>
+                        </div>
+
+                        <div class="pt-2">
+                            <div class="flex items-center justify-between gap-4 text-sm">
+                                <span class="text-neutral-600">Program Progress</span>
+                                <span class="text-neutral-900">{{ $academicSidebar['progress_percent'] ?? 0 }}%</span>
+                            </div>
+                            <div class="mt-2 h-2 w-full rounded-full bg-neutral-100">
+                                <div class="h-2 rounded-full bg-primary-600" style="{{ $academicSidebar['progress_style'] ?? '' }}"></div>
+                            </div>
+                            <div class="mt-2 text-xs font-semibold text-neutral-500">{{ $academicSidebar['progress_label'] ?? '' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                    <div class="flex items-start justify-between gap-4">
+                        <h2 class="text-sm font-semibold text-neutral-900">Academic Achievements</h2>
+                    </div>
+
+                    <div class="mt-5 space-y-4">
+                        @foreach($academicAchievements as $achievement)
+                            @php
+                                $tone = $achievement['tone'] ?? 'primary';
+                                $badge = $tone === 'warning'
+                                    ? 'bg-warning-50 text-warning-700 ring-warning-100'
+                                    : ($tone === 'info'
+                                        ? 'bg-info-50 text-info-700 ring-info-100'
+                                        : 'bg-primary-50 text-primary-700 ring-primary-100');
+                                $icon = $tone === 'warning'
+                                    ? 'text-warning-700 bg-warning-50'
+                                    : ($tone === 'info'
+                                        ? 'text-info-700 bg-info-50'
+                                        : 'text-primary-700 bg-primary-50');
+                            @endphp
+
+                            <div class="flex items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                                <div class="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl {{ $icon }}">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15l4-4m0 0l-4-4m4 4H8" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="text-sm font-semibold text-neutral-900">{{ $achievement['title'] }}</div>
+                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset {{ $badge }}">{{ $achievement['year'] }}</span>
+                                    </div>
+                                    <div class="mt-1 text-sm text-neutral-600">{{ $achievement['body'] }}</div>
+                                </div>
                             </div>
                         @endforeach
-                        <button type="button" wire:click="openEditProfile" class="pt-2 text-left text-sm font-semibold text-primary-700 hover:text-primary-800">
-                            Complete your profile to 100% →
+
+                        <button type="button" class="inline-flex h-11 w-full items-center justify-center rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
+                            View All Achievements
+                            <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5c-2.75 0-5.25-.99-7.16-2.922L12 14z" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 class="text-sm font-semibold text-neutral-900">Academic Summary</h2>
+                            <div class="mt-4 space-y-3 text-sm font-semibold text-neutral-700">
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="text-neutral-500">Institution</span>
+                                    <span class="text-neutral-900 truncate">{{ $academicSummary['institution'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="text-neutral-500">Faculty</span>
+                                    <span class="text-neutral-900 truncate">{{ $academicSummary['faculty'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="text-neutral-500">Department</span>
+                                    <span class="text-neutral-900 truncate">{{ $academicSummary['department'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="text-neutral-500">Level</span>
+                                    <span class="text-neutral-900 truncate">{{ $academicSummary['level'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="text-neutral-500">Academic Year</span>
+                                    <span class="text-neutral-900 truncate">{{ $academicSummary['academic_year'] ?? '—' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-700">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.105 0 2-.895 2-2V7a2 2 0 00-4 0v2c0 1.105.895 2 2 2zm0 0v2m8 4v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h2 class="text-sm font-semibold text-neutral-900">Account Security</h2>
+                            <p class="mt-2 text-sm text-neutral-600">Keep your account secure and protect your personal information.</p>
+                        <a href="{{ route('student.settings', ['tab' => 'security']) }}" class="mt-4 inline-flex h-11 w-full items-center justify-center rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
+                                Change Password
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                    <h2 class="text-sm font-semibold text-neutral-900">Profile Completion</h2>
+                    <div class="mt-6 flex items-center gap-6">
+                        <div class="relative h-28 w-28 shrink-0 rounded-full" style="background: {{ $completion['style'] }};">
+                            <div class="absolute inset-3 rounded-full bg-white"></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                <div class="text-2xl font-semibold text-neutral-900">{{ $completion['percent'] }}%</div>
+                                <div class="text-xs font-semibold text-neutral-500">Complete</div>
+                            </div>
+                        </div>
+
+                        <div class="min-w-0 space-y-2 text-sm font-semibold">
+                            @foreach($completion['items'] as $item)
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="text-neutral-700">{{ $item['label'] }}</span>
+                                    <span class="inline-flex h-6 w-6 items-center justify-center rounded-full {{ $item['done'] ? 'bg-success-50 text-success-700' : 'bg-neutral-100 text-neutral-400' }}">
+                                        @if($item['done'])
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        @else
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                            </svg>
+                                        @endif
+                                    </span>
+                                </div>
+                            @endforeach
+                            <button type="button" wire:click="openEditProfile" class="pt-2 text-left text-sm font-semibold text-primary-700 hover:text-primary-800">
+                                Complete your profile to 100% →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </aside>
     </div>
 
@@ -343,6 +586,14 @@
                         <div class="mt-2">
                             <input id="profile-name" type="text" wire:model.defer="name" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-neutral-900" for="profile-email">Email</label>
+                        <div class="mt-2">
+                            <input id="profile-email" type="email" wire:model.defer="email" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
                     </div>
 

@@ -16,6 +16,8 @@ class Profile extends Component
 
     public string $name = '';
 
+    public string $email = '';
+
     public string $phone = '';
 
     public string $address = '';
@@ -35,6 +37,7 @@ class Profile extends Component
         $profile = $user?->studentProfile()->firstOrCreate();
 
         $this->name = (string) ($user?->name ?? '');
+        $this->email = (string) ($user?->email ?? '');
         $this->phone = (string) ($profile?->phone ?? '');
         $this->address = (string) ($profile?->address ?? '');
         $this->bio = (string) ($profile?->bio ?? '');
@@ -57,10 +60,16 @@ class Profile extends Component
         $this->dispatch('open-modal', 'student-profile-edit');
     }
 
+    public function openEditAcademicInfo(): void
+    {
+        $this->dispatch('open-modal', 'student-profile-edit');
+    }
+
     public function saveProfile(): void
     {
         $this->validate([
             'name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . auth()->id()],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:255'],
             'bio' => ['nullable', 'string', 'max:5000'],
@@ -73,7 +82,14 @@ class Profile extends Component
 
         $user->forceFill([
             'name' => trim($this->name),
-        ])->save();
+            'email' => trim($this->email),
+        ]);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         StudentProfile::query()->updateOrCreate(
             ['user_id' => $user->id],
@@ -95,6 +111,8 @@ class Profile extends Component
         $user = auth()->user();
         $profile = $user?->studentProfile;
 
+        $academic = $this->academicDetails($user, $profile);
+
         return view('livewire.student.profile', [
             'title' => 'Profile',
             'tabs' => $this->tabs(),
@@ -103,6 +121,9 @@ class Profile extends Component
             'contactCard' => $this->contactCard($user, $profile),
             'socialCard' => $this->socialCard($user),
             'academicSummary' => $this->academicSummary($profile),
+            'academicDetails' => $academic,
+            'academicSidebar' => $this->academicSidebar($academic),
+            'academicAchievements' => $this->academicAchievements(),
             'completion' => $this->profileCompletion($user, $profile),
         ])->extends('layouts.dashboard')->section('content');
     }
@@ -178,6 +199,86 @@ class Profile extends Component
             'department' => $profile?->department,
             'level' => $profile?->level,
             'academic_year' => $startYear . '/' . ($startYear + 1),
+        ];
+    }
+
+    private function academicDetails($user, ?StudentProfile $profile): array
+    {
+        $year = (int) Carbon::now()->format('Y');
+        $month = (int) Carbon::now()->format('n');
+        $startYear = $month >= 9 ? $year : $year - 1;
+
+        $levelRaw = trim((string) ($profile?->level ?? ''));
+        $digits = (int) preg_replace('/\D+/', '', $levelRaw);
+        $academicLevel = $digits >= 100 ? (int) floor($digits / 100) : null;
+        $academicLevel = $academicLevel !== null && $academicLevel > 0 ? $academicLevel : null;
+
+        $entryYear = $academicLevel !== null ? (string) ($startYear - ($academicLevel - 1)) . '/' . (string) ($startYear - ($academicLevel - 1) + 1) : null;
+        $expectedGrad = $academicLevel !== null ? (string) ($startYear + (4 - $academicLevel)) : null;
+
+        $department = $profile?->department;
+        $faculty = null;
+
+        if ($department) {
+            $faculty = str_contains(Str::lower($department), 'science') ? 'Faculty of Science' : 'Faculty of Science';
+        }
+
+        return [
+            'institution' => $profile?->university,
+            'faculty' => $faculty,
+            'department' => $department,
+            'program' => $department ? 'Bachelor of Science in ' . $department : null,
+            'level' => $profile?->level,
+            'matricule' => $user?->matricule,
+            'academic_year' => $startYear . '/' . ($startYear + 1),
+            'entry_year' => $entryYear,
+            'cgpa' => '3.68 / 4.00',
+            'cgpa_badge' => 'Good',
+            'expected_graduation' => $expectedGrad,
+        ];
+    }
+
+    private function academicSidebar(array $academicDetails): array
+    {
+        $creditsEarned = 76;
+        $coursesCompleted = 18;
+        $creditsRequired = 180;
+        $creditsCompleted = 129;
+        $progress = $creditsRequired > 0 ? (int) round(($creditsCompleted / $creditsRequired) * 100) : 0;
+
+        return [
+            'total_credit_units_earned' => $creditsEarned,
+            'cgpa' => $academicDetails['cgpa'] ?? null,
+            'academic_standing' => 'Good',
+            'class' => 'Second Class Upper',
+            'total_courses_completed' => $coursesCompleted,
+            'progress_percent' => $progress,
+            'progress_label' => $creditsCompleted . ' of ' . $creditsRequired . ' Credit Units Completed',
+            'progress_style' => 'width: ' . max(0, min(100, $progress)) . '%',
+        ];
+    }
+
+    private function academicAchievements(): array
+    {
+        return [
+            [
+                'title' => 'Dean’s List',
+                'body' => 'Awarded for academic excellence in 2023/2024',
+                'year' => '2024',
+                'tone' => 'warning',
+            ],
+            [
+                'title' => 'Programming Contest',
+                'body' => '1st Position – UBa Coding Challenge',
+                'year' => '2023',
+                'tone' => 'info',
+            ],
+            [
+                'title' => 'Best Final Year Project',
+                'body' => 'Faculty of Science Award',
+                'year' => '2023',
+                'tone' => 'primary',
+            ],
         ];
     }
 

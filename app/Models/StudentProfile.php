@@ -16,10 +16,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'phone',
     'address',
     'bio',
+    'settings',
 ])]
 class StudentProfile extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'settings' => 'array',
+    ];
 
     public function user(): BelongsTo
     {

@@ -29,14 +29,32 @@ class StudentProfilePageTest extends TestCase
             ->assertSee('Academic Summary');
     }
 
+    public function test_student_profile_academic_tab_renders_without_course_registration(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+        StudentProfile::firstOrCreate(['user_id' => $student->id], [
+            'university' => 'University of Bameda',
+            'department' => 'Computer Science',
+            'level' => '300',
+        ]);
+
+        Livewire::actingAs($student)
+            ->test(Profile::class)
+            ->set('tab', 'academic')
+            ->assertSee('Academic Details')
+            ->assertSee('Academic Achievements')
+            ->assertDontSee('Course Registration');
+    }
+
     public function test_student_can_update_profile_details(): void
     {
-        $student = User::factory()->create(['role' => 'student', 'name' => 'Old Name']);
+        $student = User::factory()->create(['role' => 'student', 'name' => 'Old Name', 'email' => 'old@example.com']);
         StudentProfile::firstOrCreate(['user_id' => $student->id]);
 
         Livewire::actingAs($student)
             ->test(Profile::class)
             ->set('name', 'New Name')
+            ->set('email', 'new@example.com')
             ->set('phone', '+1 555 0100')
             ->set('address', 'Chicago, IL')
             ->set('university', 'University of Lagos')
@@ -49,6 +67,7 @@ class StudentProfilePageTest extends TestCase
         $this->assertDatabaseHas('users', [
             'id' => $student->id,
             'name' => 'New Name',
+            'email' => 'new@example.com',
         ]);
 
         $this->assertDatabaseHas('student_profiles', [
@@ -61,4 +80,3 @@ class StudentProfilePageTest extends TestCase
         ]);
     }
 }
-
