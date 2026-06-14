@@ -1,4 +1,4 @@
-<x-layouts.auth card-width="xl">
+<x-layouts.auth variant="split" card-width="xl">
     @php
         $roleDetails = [
             'student' => [
@@ -30,37 +30,70 @@
         $selectedRole = old('role', 'student');
         $selectedRole = array_key_exists($selectedRole, $roleDetails) ? $selectedRole : 'student';
         $selectedRoleConfig = $roleDetails[$selectedRole];
-        $inputClass = 'mt-1 block h-12 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-sm text-neutral-900 shadow-soft placeholder:text-neutral-400 transition focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-500';
+        $inputClass = 'mt-1 block h-12 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-[13px] leading-5 text-neutral-900 shadow-soft placeholder:text-neutral-400 transition focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-500 lg:h-11 lg:px-3.5';
         $passwordInputClass = $inputClass.' pr-16';
     @endphp
 
-    <div class="space-y-10">
-        <div class="space-y-4 text-center sm:text-left">
-            <span class="inline-flex items-center rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+    <x-slot:hero>
+        <div class="space-y-7">
+            <div class="space-y-3.5">
+                <span class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-100">
+                    Start with the right workspace
+                </span>
+                <div class="space-y-3">
+                    <h1 class="max-w-xl text-4xl font-semibold leading-[1.02] tracking-tight text-white sm:text-5xl">
+                        Create a Syncora account that matches how you manage internships.
+                    </h1>
+                    <p class="max-w-xl text-[15px] leading-6 text-slate-300">
+                        Choose a role first, then complete only the details needed for your student, supervisor, or company onboarding flow.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="rounded-[1.75rem] border border-white/10 bg-white/10 p-4 backdrop-blur lg:p-4.5">
+                    <p class="text-[13px] font-semibold tracking-tight text-white">Role-aware onboarding</p>
+                    <p class="mt-1.5 text-[13px] leading-6 text-slate-300">
+                        Each account type gets the right fields, dashboard setup, and workflow access from the start.
+                    </p>
+                </div>
+                <div class="rounded-[1.75rem] border border-white/10 bg-white/10 p-4 backdrop-blur lg:p-4.5">
+                    <p class="text-[13px] font-semibold tracking-tight text-white">Same secure foundation</p>
+                    <p class="mt-1.5 text-[13px] leading-6 text-slate-300">
+                        Registration keeps the same validation, account creation rules, and protected Syncora auth flow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </x-slot:hero>
+
+    <div class="space-y-4">
+        <div class="space-y-2.5">
+            <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600">
                 Create your Syncora account
             </span>
-            <div class="space-y-2">
-                <h1 class="text-3xl font-semibold tracking-tight text-slate-900">{{ __('Create your account') }}</h1>
-                <p class="mx-auto max-w-xl text-sm leading-6 text-slate-600 sm:mx-0">{{ __('Choose your workspace and we will only show the information needed for that role.') }}</p>
+            <div class="space-y-1.5">
+                <h1 class="text-3xl font-semibold leading-[1.08] tracking-tight text-slate-950 lg:text-[1.8rem]">{{ __('Start your onboarding') }}</h1>
+                <p class="max-w-xl text-[14px] leading-6 text-slate-600">{{ __('Choose a role, complete the matching details, and create your workspace.') }}</p>
             </div>
         </div>
 
-        <form method="POST" action="{{ route('register') }}" class="space-y-10" id="registration-form">
+        <form method="POST" action="{{ route('register') }}" class="space-y-4.5 lg:space-y-4" id="registration-form">
             @csrf
             <input id="registration-role" type="hidden" name="role" value="{{ $selectedRole }}" />
 
-            <div class="space-y-4 rounded-[1.75rem] border border-slate-200/80 bg-white/80 p-5 shadow-sm ring-1 ring-slate-100/80 backdrop-blur sm:p-6">
-                <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div class="space-y-2.5 rounded-[1.35rem] border border-slate-200/80 bg-white/80 p-4 shadow-sm ring-1 ring-slate-100/80 backdrop-blur">
+                <div class="flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{{ __('Choose your workspace') }}</p>
-                        <p class="mt-1 text-sm text-slate-500">{{ __('Pick the account type that matches how you will use Syncora.') }}</p>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{{ __('Choose your workspace') }}</p>
+                        <p class="text-[13px] leading-5 text-slate-500">{{ __('Pick the account type that matches how you will use Syncora.') }}</p>
                     </div>
-                    <span id="selected-role-pill" class="inline-flex w-fit rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                    <span id="selected-role-pill" class="inline-flex w-fit rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-indigo-700 lg:py-0.5">
                         {{ $selectedRoleConfig['pill'] }}
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3" role="radiogroup" aria-label="{{ __('Choose a role') }}">
+                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" role="radiogroup" aria-label="{{ __('Choose a role') }}">
                     @foreach ($roleDetails as $role => $details)
                         @php($isSelected = $selectedRole === $role)
                         <button
@@ -73,20 +106,19 @@
                             data-role-cta="{{ $details['cta'] }}"
                             data-role-icon="{{ $details['icon'] }}"
                             aria-pressed="{{ $isSelected ? 'true' : 'false' }}"
-                            class="{{ $isSelected ? 'border-indigo-200 bg-indigo-50/80 text-slate-900 shadow-lg shadow-indigo-100/50 ring-1 ring-indigo-100' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50' }} h-full rounded-[1.5rem] border p-5 text-left transition focus:outline-none focus:ring-4 focus:ring-indigo-500/20"
+                            class="{{ $isSelected ? 'border-indigo-200 bg-indigo-50/80 text-slate-900 shadow-lg shadow-indigo-100/50 ring-1 ring-indigo-100' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50' }} h-full rounded-[1.05rem] border px-3 py-2.5 text-left transition focus:outline-none focus:ring-4 focus:ring-indigo-500/20"
                         >
-                            <div class="flex items-start gap-3">
-                                <span data-role-icon-badge class="{{ $isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600' }} inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-semibold">
+                            <div class="flex items-center gap-2.5">
+                                <span data-role-icon-badge class="{{ $isSelected ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600' }} inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-[11px] font-semibold">
                                     {{ $details['icon'] }}
                                 </span>
-                                <div class="min-w-0">
-                                    <div class="flex flex-wrap items-center justify-between gap-3">
-                                        <span class="text-sm font-semibold">{{ $details['label'] }}</span>
-                                        <span data-role-status class="{{ $isSelected ? 'bg-white text-indigo-700 ring-1 ring-indigo-100' : 'bg-slate-100 text-slate-500' }} rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-[13px] font-semibold leading-4 tracking-tight">{{ $details['label'] }}</span>
+                                        <span data-role-status class="{{ $isSelected ? 'bg-white text-indigo-700 ring-1 ring-indigo-100' : 'bg-slate-100 text-slate-500' }} rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em]">
                                             {{ $isSelected ? 'Selected' : 'Choose' }}
                                         </span>
                                     </div>
-                                    <p class="mt-2 text-xs leading-5 {{ $isSelected ? 'text-slate-600' : 'text-slate-500' }}">{{ $details['description'] }}</p>
                                 </div>
                             </div>
                         </button>
@@ -95,17 +127,17 @@
                 <x-input-error :messages="$errors->get('role')" class="mt-2" />
             </div>
 
-            <div class="space-y-6 rounded-[1.75rem] border border-slate-200 bg-slate-50/90 p-5 sm:p-7">
-                <div class="rounded-[1.5rem] border border-white bg-white/90 p-6 shadow-sm ring-1 ring-slate-100">
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div class="space-y-3.5 rounded-[1.4rem] border border-slate-200 bg-slate-50/90 p-4 sm:p-5">
+                <div class="rounded-[1.1rem] border border-white bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                            <span id="selected-role-badge" class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                            <span id="selected-role-badge" class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                                 {{ $selectedRoleConfig['pill'] }}
                             </span>
-                            <h2 id="selected-role-title" class="mt-3 text-lg font-semibold tracking-tight text-slate-900">{{ $selectedRoleConfig['title'] }}</h2>
-                            <p id="selected-role-description" class="mt-2 max-w-xl text-sm leading-6 text-slate-600">{{ $selectedRoleConfig['description'] }}</p>
+                            <h2 id="selected-role-title" class="mt-2 text-[17px] font-semibold leading-6 tracking-tight text-slate-900">{{ $selectedRoleConfig['title'] }}</h2>
+                            <p id="selected-role-description" class="mt-1.5 max-w-xl text-[13px] leading-5 text-slate-600">{{ $selectedRoleConfig['description'] }}</p>
                         </div>
-                        <span id="selected-role-icon" class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-base font-semibold text-white">
+                        <span id="selected-role-icon" class="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-900 text-xs font-semibold text-white">
                             {{ $selectedRoleConfig['icon'] }}
                         </span>
                     </div>
@@ -113,7 +145,7 @@
 
                 <div
                     data-role-field-group="student"
-                    class="{{ $selectedRole === 'student' ? '' : 'hidden' }} space-y-5"
+                    class="{{ $selectedRole === 'student' ? '' : 'hidden' }} space-y-3.5"
                     aria-hidden="{{ $selectedRole === 'student' ? 'false' : 'true' }}"
                 >
                     <div>
@@ -122,7 +154,7 @@
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
-                    <div class="grid gap-5 lg:grid-cols-2">
+                    <div class="grid gap-3.5 lg:grid-cols-2">
                         <div>
                             <x-input-label for="student-email" :value="__('Email Address')" />
                             <input id="student-email" class="{{ $inputClass }}" type="email" name="email" value="{{ old('email') }}" autocomplete="username" placeholder="Enter your email address" data-required="true" @disabled($selectedRole !== 'student') @required($selectedRole === 'student') />
@@ -156,7 +188,7 @@
 
                 <div
                     data-role-field-group="supervisor"
-                    class="{{ $selectedRole === 'supervisor' ? '' : 'hidden' }} space-y-5"
+                    class="{{ $selectedRole === 'supervisor' ? '' : 'hidden' }} space-y-3.5"
                     aria-hidden="{{ $selectedRole === 'supervisor' ? 'false' : 'true' }}"
                 >
                     <div>
@@ -165,7 +197,7 @@
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
-                    <div class="grid gap-5 lg:grid-cols-2">
+                    <div class="grid gap-3.5 lg:grid-cols-2">
                         <div>
                             <x-input-label for="supervisor-institution" :value="__('Institution')" />
                             <input id="supervisor-institution" class="{{ $inputClass }}" type="text" name="institution" value="{{ old('institution') }}" autocomplete="organization" placeholder="Enter your institution" data-required="true" @disabled($selectedRole !== 'supervisor') @required($selectedRole === 'supervisor') />
@@ -179,7 +211,7 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-5 lg:grid-cols-2">
+                    <div class="grid gap-3.5 lg:grid-cols-2">
                         <div>
                             <x-input-label for="supervisor-department" :value="__('Department')" />
                             <input id="supervisor-department" class="{{ $inputClass }}" type="text" name="department" value="{{ old('department') }}" autocomplete="organization-title" placeholder="Enter your department" data-required="true" @disabled($selectedRole !== 'supervisor') @required($selectedRole === 'supervisor') />
@@ -207,7 +239,7 @@
 
                 <div
                     data-role-field-group="company"
-                    class="{{ $selectedRole === 'company' ? '' : 'hidden' }} space-y-5"
+                    class="{{ $selectedRole === 'company' ? '' : 'hidden' }} space-y-3.5"
                     aria-hidden="{{ $selectedRole === 'company' ? 'false' : 'true' }}"
                 >
                     <div>
@@ -216,7 +248,7 @@
                         <x-input-error :messages="$errors->get('company_name')" class="mt-2" />
                     </div>
 
-                    <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="grid gap-3.5 sm:grid-cols-2">
                         <div>
                             <x-input-label for="company-industry-type" :value="__('Industry Type')" />
                             <input id="company-industry-type" class="{{ $inputClass }}" type="text" name="industry_type" value="{{ old('industry_type') }}" autocomplete="organization-title" placeholder="Enter your industry type" data-required="true" @disabled($selectedRole !== 'company') @required($selectedRole === 'company') />
@@ -249,13 +281,13 @@
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-2">
                 <x-primary-button class="h-12 w-full rounded-2xl justify-center text-sm">
                     <span id="selected-role-cta">{{ $selectedRoleConfig['cta'] }}</span>
                 </x-primary-button>
 
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/90 px-4 py-4 text-sm text-slate-600">
-                    <p class="font-medium text-slate-900">{{ __('Role-aware onboarding') }}</p>
+                <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/90 px-4 py-3 text-[13px] leading-5 text-slate-600">
+                    <p class="font-medium tracking-tight text-slate-900">{{ __('Role-aware onboarding') }}</p>
                     <p class="mt-1">{{ __('Your role determines the dashboard experience and profile setup you will see after registration.') }}</p>
                 </div>
             </div>

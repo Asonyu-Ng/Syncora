@@ -16,11 +16,12 @@ class RegistrationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Syncora');
-        $response->assertSee('Sign in or create your Syncora workspace.');
+        $response->assertSee('Create a Syncora account that matches how you manage internships.');
         $response->assertSee('Student');
         $response->assertSee('Supervisor');
         $response->assertSee('Company');
         $response->assertSee('Create your Syncora account');
+        $response->assertSee('Start your onboarding');
         $response->assertSee('Choose your workspace');
         $response->assertSee('Create Student Account');
         $response->assertSee('Role-aware onboarding');

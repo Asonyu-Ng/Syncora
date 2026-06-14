@@ -16,12 +16,15 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Syncora');
-        $response->assertSee('Sign in or create your Syncora workspace.');
         $response->assertSee('Sign in to Syncora');
+        $response->assertSee('Access your account');
         $response->assertSee('Welcome back');
+        $response->assertSee('Manage internships, approvals, and reporting in one focused workspace.');
         $response->assertSee('Enter your email address');
         $response->assertSee('Need help signing in?');
         $response->assertSee('Private device recommended');
+        $response->assertSee('Forgot password?');
+        $response->assertSee('Register');
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

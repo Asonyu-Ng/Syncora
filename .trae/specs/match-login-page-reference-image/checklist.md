@@ -1,0 +1,7 @@
+- [x] `/login` uses a split layout inspired by the provided reference image
+- [x] The left panel shows Syncora branding, welcome copy, and supporting messaging
+- [x] The right panel presents the sign-in form in a structure aligned with the image
+- [x] Login inputs, forgot-password link, sign-in button, and sign-up prompt remain present
+- [x] Existing validation, accessibility, and login behavior remain intact
+- [x] Successful login still redirects correctly
+- [x] Focused login verification and diagnostics pass
