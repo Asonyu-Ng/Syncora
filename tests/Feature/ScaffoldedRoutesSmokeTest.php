@@ -10,6 +10,22 @@ class ScaffoldedRoutesSmokeTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_dashboard_shell_renders_grouped_navigation_and_header_tools(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'student',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/student/dashboard')
+            ->assertOk()
+            ->assertSee('Overview')
+            ->assertSee('Work')
+            ->assertSee('Account')
+            ->assertSee('Explore')
+            ->assertSee('Search dashboard');
+    }
+
     public function test_all_scaffolded_page_routes_render_without_errors(): void
     {
         $routesByRole = [

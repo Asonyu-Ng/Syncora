@@ -67,6 +67,7 @@ class Sidebar extends Component
                 'icon' => 'home',
                 'href' => $dashboard,
                 'active' => $isDashboardActive,
+                'section' => 'Overview',
             ],
         ];
 
@@ -77,42 +78,49 @@ class Sidebar extends Component
                     'icon' => 'briefcase',
                     'href' => $this->routeUrl('student.internships.search', '/student/internships'),
                     'active' => request()->routeIs('student.internships.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'My Applications',
                     'icon' => 'document',
                     'href' => $this->routeUrl('student.applications.index', '/student/applications'),
                     'active' => request()->routeIs('student.applications.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Tasks',
                     'icon' => 'check-circle',
                     'href' => $this->routeUrl('student.tasks.board', '/student/tasks'),
                     'active' => request()->routeIs('student.tasks.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Logbook',
                     'icon' => 'clock',
                     'href' => $this->routeUrl('student.logbook.index', '/student/logbook'),
                     'active' => request()->routeIs('student.logbook.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Reports',
                     'icon' => 'chart-bar',
                     'href' => $this->routeUrl('student.reports.ai', '/student/ai-reports'),
                     'active' => request()->routeIs('student.reports.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Profile',
                     'icon' => 'user',
                     'href' => $this->routeUrl('student.profile', '/student/profile'),
                     'active' => request()->routeIs('student.profile'),
+                    'section' => 'Account',
                 ],
                 [
                     'label' => 'Settings',
                     'icon' => 'cog',
                     'href' => $this->routeUrl('student.settings', '/student/settings'),
                     'active' => request()->routeIs('student.settings'),
+                    'section' => 'Account',
                 ],
             ]);
         }
@@ -124,48 +132,56 @@ class Sidebar extends Component
                     'icon' => 'briefcase',
                     'href' => $this->routeUrl('company.internships.index', '/company/internships'),
                     'active' => request()->routeIs('company.internships.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Applicants',
                     'icon' => 'document',
                     'href' => $this->routeUrl('company.applicants.index', '/company/applicants'),
                     'active' => request()->routeIs('company.applicants.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Active Interns',
                     'icon' => 'users',
                     'href' => $this->routeUrl('company.interns.index', '/company/interns'),
                     'active' => request()->routeIs('company.interns.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Tasks',
                     'icon' => 'check-circle',
                     'href' => $this->routeUrl('company.tasks.index', '/company/tasks'),
                     'active' => request()->routeIs('company.tasks.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Evaluations',
                     'icon' => 'chart-bar',
                     'href' => $this->routeUrl('company.evaluations.index', '/company/evaluations'),
                     'active' => request()->routeIs('company.evaluations.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Reports',
                     'icon' => 'document',
                     'href' => $this->routeUrl('company.reports.index', '/company/reports'),
                     'active' => request()->routeIs('company.reports.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Profile',
                     'icon' => 'user',
                     'href' => $this->routeUrl('company.profile', '/company/profile'),
                     'active' => request()->routeIs('company.profile'),
+                    'section' => 'Account',
                 ],
                 [
                     'label' => 'Settings',
                     'icon' => 'cog',
                     'href' => $this->routeUrl('company.settings', '/company/settings'),
                     'active' => request()->routeIs('company.settings'),
+                    'section' => 'Account',
                 ],
             ]);
         }
@@ -177,54 +193,63 @@ class Sidebar extends Component
                     'icon' => 'users',
                     'href' => $this->routeUrl('supervisor.students.index', '/supervisor/students'),
                     'active' => request()->routeIs('supervisor.students.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Tasks',
                     'icon' => 'check-circle',
                     'href' => $this->routeUrl('supervisor.tasks.index', '/supervisor/tasks'),
                     'active' => request()->routeIs('supervisor.tasks.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Logbooks',
                     'icon' => 'clock',
                     'href' => $this->routeUrl('supervisor.logbooks.index', '/supervisor/logbooks'),
                     'active' => request()->routeIs('supervisor.logbooks.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Evaluations',
                     'icon' => 'chart-bar',
                     'href' => $this->routeUrl('supervisor.evaluations.index', '/supervisor/evaluations'),
                     'active' => request()->routeIs('supervisor.evaluations.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Monitoring',
                     'icon' => 'briefcase',
                     'href' => $this->routeUrl('supervisor.monitoring.index', '/supervisor/monitoring'),
                     'active' => request()->routeIs('supervisor.monitoring.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Reports',
                     'icon' => 'document',
                     'href' => $this->routeUrl('supervisor.reports.index', '/supervisor/reports'),
                     'active' => request()->routeIs('supervisor.reports.*'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Calendar',
                     'icon' => 'clock',
                     'href' => $this->routeUrl('supervisor.calendar', '/supervisor/calendar'),
                     'active' => request()->routeIs('supervisor.calendar'),
+                    'section' => 'Work',
                 ],
                 [
                     'label' => 'Profile',
                     'icon' => 'user',
                     'href' => $this->routeUrl('supervisor.profile', '/supervisor/profile'),
                     'active' => request()->routeIs('supervisor.profile'),
+                    'section' => 'Account',
                 ],
                 [
                     'label' => 'Settings',
                     'icon' => 'cog',
                     'href' => $this->routeUrl('supervisor.settings', '/supervisor/settings'),
                     'active' => request()->routeIs('supervisor.settings'),
+                    'section' => 'Account',
                 ],
             ]);
         }
@@ -234,6 +259,7 @@ class Sidebar extends Component
             'icon' => 'users',
             'href' => '/__dashboards',
             'active' => request()->is('__dashboards'),
+            'section' => 'Explore',
         ];
 
         return $items;

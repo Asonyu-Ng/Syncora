@@ -62,6 +62,23 @@ class TaskPolicy
         return $task->assigned_by_user_id === $user->id;
     }
 
+    public function submit(User $user, Task $task): bool
+    {
+        return $user->role === 'student'
+            && $user->studentProfile !== null
+            && $task->student_profile_id === $user->studentProfile->id;
+    }
+
+    public function review(User $user, Task $task): bool
+    {
+        if ($this->isAdmin($user)) {
+            return true;
+        }
+
+        return in_array($user->role, ['company', 'supervisor'], true)
+            && $this->view($user, $task);
+    }
+
     public function delete(User $user, Task $task): bool
     {
         if ($this->isAdmin($user)) {

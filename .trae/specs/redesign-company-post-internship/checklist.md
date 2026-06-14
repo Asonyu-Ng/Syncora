@@ -1,0 +1,12 @@
+- [ ] Post Internship page matches the approved visual direction with a single-card layout
+- [ ] Page includes the required visible fields from the mockup
+- [ ] `Type` supports all three options: `Onsite`, `Hybrid`, and `Remote`
+- [ ] `Duration` uses a slider from `1` to `5` months and shows the selected value clearly
+- [ ] `Required Skills` behaves like tag entry with add/remove support
+- [ ] Attachment area is visible as a placeholder and does not block publish
+- [ ] Form saves a real internship record and publishes directly
+- [ ] Success feedback and redirect work after publish
+- [ ] Page uses Cameroon-based placeholders/examples instead of Nigeria-based wording
+- [ ] Existing company dashboard shell and related pages remain visually stable
+- [ ] Focused tests cover render and publish behavior
+- [ ] Edited files are free of diagnostics

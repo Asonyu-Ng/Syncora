@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -37,6 +39,10 @@ class TaskAssignment extends Component
 
     #[Url]
     public int $perPage = 10;
+
+    public ?int $activeTaskId = null;
+
+    public string $reviewerFeedback = '';
 
     public string $newTaskTitle = '';
 
@@ -81,14 +87,8 @@ class TaskAssignment extends Component
     public function createNewTask(): void
     {
         $user = auth()->user();
-        $supervisorProfile = SupervisorProfile::query()->firstOrCreate([
-            'user_id' => $user?->id,
-        ]);
-
-        $internships = Internship::query()
-            ->where('supervisor_profile_id', $supervisorProfile->id)
-            ->pluck('id')
-            ->all();
+        $supervisorProfile = $this->supervisorProfile();
+        $internships = $this->supervisedInternshipIds()->all();
 
         if (empty($internships)) {
             session()->flash('message', 'No internships assigned to your supervisor profile yet.');
@@ -152,6 +152,26 @@ class TaskAssignment extends Component
         $this->resetPage();
     }
 
+    public function selectTask(int $taskId): void
+    {
+        $task = $this->findTaskForReview($this->supervisedInternshipIds(), $taskId);
+
+        Gate::authorize('review', $task);
+
+        $this->activeTaskId = $task->id;
+        $this->resetReviewForm();
+    }
+
+    public function markSubmissionReviewed(): void
+    {
+        $this->reviewActiveSubmission('reviewed');
+    }
+
+    public function markSubmissionForRework(): void
+    {
+        $this->reviewActiveSubmission('rework');
+    }
+
     public function openCreate(): void
     {
         $this->tab = 'create';
@@ -174,11 +194,7 @@ class TaskAssignment extends Component
 
     public function render(): View
     {
-        $user = auth()->user();
-        $supervisorProfile = SupervisorProfile::query()->firstOrCreate([
-            'user_id' => $user?->id,
-        ]);
-
+        $supervisorProfile = $this->supervisorProfile();
         $internships = Internship::query()
             ->where('supervisor_profile_id', $supervisorProfile->id)
             ->orderBy('title')
@@ -194,6 +210,7 @@ class TaskAssignment extends Component
             'internships' => $internships,
             'students' => $this->supervisedStudents($internshipIds),
             'overdueTasks' => $this->overdueTasks($internshipIds),
+            'selectedTask' => $this->selectedTaskPayload($internshipIds),
         ])->extends('layouts.dashboard')->section('content');
     }
 
@@ -208,10 +225,7 @@ class TaskAssignment extends Component
 
     private function tasksQuery(Collection $internshipIds): Builder
     {
-        $query = Task::query()
-            ->with(['studentProfile.user', 'internship.companyProfile'])
-            ->when($internshipIds->isNotEmpty(), fn (Builder $q) => $q->whereIn('internship_id', $internshipIds))
-            ->when($internshipIds->isEmpty(), fn (Builder $q) => $q->whereRaw('1 = 0'));
+        $query = $this->scopedTasksQuery($internshipIds);
 
         $query = $this->applyTabFilter($query);
         $query = $this->applyStatusFilter($query);
@@ -302,10 +316,11 @@ class TaskAssignment extends Component
         $now = Carbon::now();
         $isCompleted = $task->status === 'completed';
         $isOverdue = ! $isCompleted && $dueAt !== null && $dueAt->isPast();
-
         $priority = $this->priorityForTask($task, $now);
         $dueMeta = $this->dueMeta($task, $now);
         $progress = $this->progressForTask($task, $isOverdue);
+        $latestSubmission = $task->latestSubmission;
+        $submissionStatus = $this->submissionStatusMeta($latestSubmission?->status);
 
         return [
             'id' => $task->id,
@@ -326,6 +341,15 @@ class TaskAssignment extends Component
             'progress' => $progress,
             'is_overdue' => $isOverdue,
             'is_completed' => $isCompleted,
+            'submission_count' => (int) ($task->submissions_count ?? 0),
+            'has_submission' => $latestSubmission !== null,
+            'latest_submission_status_label' => $submissionStatus['label'],
+            'latest_submission_status_class' => $submissionStatus['class'],
+            'latest_submission_feedback' => $latestSubmission?->reviewer_feedback
+                ? Str::limit((string) $latestSubmission->reviewer_feedback, 80)
+                : null,
+            'latest_submission_label' => $latestSubmission?->submitted_at?->format('M j, Y g:i A'),
+            'is_selected' => $task->id === $this->activeTaskId,
         ];
     }
 
@@ -414,6 +438,28 @@ class TaskAssignment extends Component
         };
     }
 
+    private function submissionStatusMeta(?string $status): array
+    {
+        return match ($status) {
+            'pending' => [
+                'label' => 'Pending',
+                'class' => 'bg-warning-50 text-warning-700 ring-warning-100',
+            ],
+            'reviewed' => [
+                'label' => 'Reviewed',
+                'class' => 'bg-success-50 text-success-700 ring-success-100',
+            ],
+            'rework' => [
+                'label' => 'Rework',
+                'class' => 'bg-danger-50 text-danger-700 ring-danger-100',
+            ],
+            default => [
+                'label' => 'No Submission',
+                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+            ],
+        };
+    }
+
     private function taskCounts(Collection $internshipIds): array
     {
         if ($internshipIds->isEmpty()) {
@@ -485,6 +531,70 @@ class TaskAssignment extends Component
             ->all();
     }
 
+    private function selectedTaskPayload(Collection $internshipIds): ?array
+    {
+        $task = $this->resolveActiveTask($internshipIds);
+
+        if (! $task) {
+            return null;
+        }
+
+        $task->loadMissing([
+            'assignedBy',
+            'internship.companyProfile',
+            'studentProfile.user',
+            'submissions.reviewedBy',
+        ]);
+
+        $latestSubmission = $task->submissions->first();
+        $latestStatus = $this->submissionStatusMeta($latestSubmission?->status);
+        $student = $task->studentProfile?->user;
+
+        return [
+            'id' => $task->id,
+            'title' => (string) $task->title,
+            'description' => $task->description,
+            'student_name' => (string) ($student?->name ?? 'Student'),
+            'student_matricule' => $student?->matricule,
+            'student_department' => $task->studentProfile?->department,
+            'internship_title' => (string) ($task->internship?->title ?? '—'),
+            'company_name' => (string) ($task->internship?->companyProfile?->company_name ?? ''),
+            'assigned_by_name' => $task->assignedBy?->name,
+            'due_label' => $task->due_at?->format('M j, Y') ?? '—',
+            'status_label' => $this->statusLabel($task->status),
+            'submission_count' => (int) $task->submissions->count(),
+            'latest_submission_status_label' => $latestStatus['label'],
+            'latest_submission_status_class' => $latestStatus['class'],
+            'latest_submission_label' => $latestSubmission?->submitted_at?->format('M j, Y g:i A'),
+            'latest_submission_feedback' => $latestSubmission?->reviewer_feedback,
+            'can_review_latest_submission' => $latestSubmission?->status === 'pending',
+            'history' => $task->submissions->map(function ($submission, int $index): array {
+                $status = $this->submissionStatusMeta($submission->status);
+
+                return [
+                    'id' => $submission->id,
+                    'status_label' => $status['label'],
+                    'status_class' => $status['class'],
+                    'submitted_label' => $submission->submitted_at?->format('M j, Y g:i A') ?? '—',
+                    'reviewed_label' => $submission->reviewed_at?->format('M j, Y g:i A'),
+                    'update_text' => (string) $submission->update_text,
+                    'reviewer_feedback' => $submission->reviewer_feedback,
+                    'reviewer_name' => $submission->reviewedBy?->name,
+                    'attachments' => collect($submission->attachments ?? [])
+                        ->map(fn (array $attachment): array => [
+                            'name' => $attachment['name'] ?? 'Attachment',
+                            'size_label' => $this->formatBytes((int) ($attachment['size'] ?? 0)),
+                            'url' => ! empty($attachment['path']) ? Storage::disk('public')->url($attachment['path']) : null,
+                        ])
+                        ->filter(fn (array $attachment): bool => $attachment['url'] !== null)
+                        ->values()
+                        ->all(),
+                    'is_latest' => $index === 0,
+                ];
+            })->all(),
+        ];
+    }
+
     private function overdueTasks(Collection $internshipIds): array
     {
         if ($internshipIds->isEmpty()) {
@@ -511,8 +621,137 @@ class TaskAssignment extends Component
             ->all();
     }
 
+    private function scopedTasksQuery(Collection $internshipIds): Builder
+    {
+        return Task::query()
+            ->with(['assignedBy', 'studentProfile.user', 'internship.companyProfile', 'latestSubmission.reviewedBy'])
+            ->withCount('submissions')
+            ->when($internshipIds->isNotEmpty(), fn (Builder $query) => $query->whereIn('internship_id', $internshipIds))
+            ->when($internshipIds->isEmpty(), fn (Builder $query) => $query->whereRaw('1 = 0'));
+    }
+
+    private function resolveActiveTask(Collection $internshipIds): ?Task
+    {
+        $query = $this->scopedTasksQuery($internshipIds);
+
+        if ($this->activeTaskId !== null) {
+            $selected = (clone $query)->whereKey($this->activeTaskId)->first();
+
+            if ($selected) {
+                return $selected;
+            }
+        }
+
+        $selected = (clone $query)->first();
+        $this->activeTaskId = $selected?->id;
+
+        return $selected;
+    }
+
+    private function findTaskForReview(Collection $internshipIds, int $taskId): Task
+    {
+        return $this->scopedTasksQuery($internshipIds)
+            ->whereKey($taskId)
+            ->firstOrFail();
+    }
+
+    private function reviewActiveSubmission(string $status): void
+    {
+        $task = $this->activeTaskId !== null
+            ? $this->findTaskForReview($this->supervisedInternshipIds(), $this->activeTaskId)
+            : null;
+
+        if (! $task) {
+            $this->addError('reviewerFeedback', 'Select a task submission before reviewing.');
+
+            return;
+        }
+
+        Gate::authorize('review', $task);
+
+        $rules = [
+            'reviewerFeedback' => ['nullable', 'string', 'max:5000'],
+        ];
+
+        if ($status === 'rework') {
+            $rules['reviewerFeedback'] = ['required', 'string', 'min:5', 'max:5000'];
+        }
+
+        $validated = $this->validate($rules, [
+            'reviewerFeedback.required' => 'Add reviewer feedback before requesting rework.',
+            'reviewerFeedback.min' => 'Reviewer feedback must be at least 5 characters.',
+            'reviewerFeedback.max' => 'Reviewer feedback must be 5000 characters or fewer.',
+        ]);
+
+        $submission = $task->submissions()->orderByDesc('submitted_at')->orderByDesc('id')->first();
+
+        if (! $submission) {
+            session()->flash('message', 'This task does not have any submissions to review yet.');
+
+            return;
+        }
+
+        if ($submission->status !== 'pending') {
+            session()->flash('message', 'The latest submission has already been reviewed.');
+
+            return;
+        }
+
+        $submission->forceFill([
+            'status' => $status,
+            'reviewer_feedback' => trim((string) ($validated['reviewerFeedback'] ?? '')) ?: null,
+            'reviewed_by_user_id' => auth()->id(),
+            'reviewed_at' => now(),
+        ])->save();
+
+        $this->resetReviewForm();
+
+        session()->flash(
+            'message',
+            $status === 'reviewed'
+                ? 'Submission marked as reviewed.'
+                : 'Submission sent back for rework.'
+        );
+    }
+
     private function escapeLike(string $value): string
     {
         return addcslashes($value, "\\%_");
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        if ($bytes <= 0) {
+            return '0 B';
+        }
+
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $power = (int) floor(log($bytes, 1024));
+        $power = min($power, count($units) - 1);
+        $value = $bytes / (1024 ** $power);
+
+        return number_format($value, $power === 0 ? 0 : 1) . ' ' . $units[$power];
+    }
+
+    private function resetReviewForm(): void
+    {
+        $this->reviewerFeedback = '';
+        $this->resetValidation();
+    }
+
+    private function supervisorProfile(): SupervisorProfile
+    {
+        $user = auth()->user();
+
+        return SupervisorProfile::query()->firstOrCreate([
+            'user_id' => $user?->id,
+        ]);
+    }
+
+    private function supervisedInternshipIds(): Collection
+    {
+        return Internship::query()
+            ->where('supervisor_profile_id', $this->supervisorProfile()->id)
+            ->pluck('id');
     }
 }

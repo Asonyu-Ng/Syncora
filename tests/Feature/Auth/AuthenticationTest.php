@@ -15,6 +15,13 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
+        $response->assertSee('Syncora');
+        $response->assertSee('Sign in or create your Syncora workspace.');
+        $response->assertSee('Sign in to Syncora');
+        $response->assertSee('Welcome back');
+        $response->assertSee('Enter your email address');
+        $response->assertSee('Need help signing in?');
+        $response->assertSee('Private device recommended');
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void
@@ -39,6 +46,21 @@ class AuthenticationTest extends TestCase
             'password' => 'wrong-password',
         ]);
 
+        $this->assertGuest();
+    }
+
+    public function test_failed_login_preserves_remember_me_state(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->followingRedirects()->from('/login')->post('/login', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+            'remember' => 'on',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertSee('name="remember" checked', false);
         $this->assertGuest();
     }
 

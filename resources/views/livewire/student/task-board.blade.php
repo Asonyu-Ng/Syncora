@@ -17,9 +17,25 @@
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div class="min-w-0">
             <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">My Tasks</h1>
-            <p class="mt-2 text-sm text-neutral-600">Track and complete your assigned internship tasks.</p>
+            <p class="mt-2 text-sm text-neutral-600">Track your assigned tasks, submit progress updates, and keep evidence in one place.</p>
         </div>
+        <button
+            type="button"
+            wire:click="openSubmitModal"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25"
+        >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Submit
+        </button>
     </div>
+
+    @if(session('message'))
+        <div class="rounded-2xl border border-primary-100 bg-primary-50 px-5 py-4 text-sm font-semibold text-primary-800">
+            {{ session('message') }}
+        </div>
+    @endif
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
@@ -150,6 +166,7 @@
                                 <th class="px-4 py-3">Due date</th>
                                 <th class="px-4 py-3">Priority</th>
                                 <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Submission</th>
                                 <th class="px-4 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -161,7 +178,7 @@
                                     $dueClasses = $task['is_overdue'] ? 'text-danger-700' : 'text-neutral-700';
                                 @endphp
 
-                                <tr class="hover:bg-neutral-50/60 transition">
+                                <tr class="transition {{ $task['is_selected'] ? 'bg-primary-50/60' : 'hover:bg-neutral-50/60' }}">
                                     <td class="px-4 py-4">
                                         <input
                                             type="checkbox"
@@ -171,9 +188,24 @@
                                         />
                                     </td>
                                     <td class="px-4 py-4 min-w-72">
-                                        <div class="text-sm font-semibold text-neutral-900">{{ $task['title'] }}</div>
+                                        <button
+                                            type="button"
+                                            wire:click="selectTask({{ $task['id'] }})"
+                                            class="text-left text-sm font-semibold text-neutral-900 transition hover:text-primary-700"
+                                        >
+                                            {{ $task['title'] }}
+                                        </button>
                                         @if($task['description'])
                                             <div class="mt-1 line-clamp-2 text-sm text-neutral-600">{{ $task['description'] }}</div>
+                                        @endif
+                                        @if($task['has_submission'])
+                                            <div class="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-neutral-500">
+                                                <span>{{ $task['submission_count'] }} {{ \Illuminate\Support\Str::plural('submission', $task['submission_count']) }}</span>
+                                                @if($task['latest_submission_label'])
+                                                    <span>&bull;</span>
+                                                    <span>Last update {{ $task['latest_submission_label'] }}</span>
+                                                @endif
+                                            </div>
                                         @endif
                                     </td>
                                     <td class="px-4 py-4">
@@ -204,6 +236,20 @@
                                             {{ $task['is_overdue'] ? 'Overdue' : $task['status'] }}
                                         </span>
                                     </td>
+                                    <td class="px-4 py-4 min-w-56">
+                                        @if($task['has_submission'])
+                                            <div class="space-y-2">
+                                                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset {{ $task['latest_submission_status_class'] }}">
+                                                    {{ $task['latest_submission_status_label'] }}
+                                                </span>
+                                                @if($task['latest_submission_feedback'])
+                                                    <div class="text-xs text-neutral-600">{{ $task['latest_submission_feedback'] }}</div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-sm font-semibold text-neutral-500">No submissions yet</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-4 text-right">
                                         <x-dropdown align="right" width="48" contentClasses="py-1 bg-white">
                                             <x-slot name="trigger">
@@ -220,6 +266,12 @@
                                                         View Internship
                                                     </a>
                                                 @endif
+                                                <button type="button" wire:click="openSubmitModal({{ $task['id'] }})" class="block w-full px-4 py-2 text-left text-sm font-semibold text-neutral-700 hover:bg-neutral-50">
+                                                    {{ $task['has_submission'] ? 'Submit Resubmission' : 'Submit Update' }}
+                                                </button>
+                                                <button type="button" wire:click="selectTask({{ $task['id'] }})" class="block w-full px-4 py-2 text-left text-sm font-semibold text-neutral-700 hover:bg-neutral-50">
+                                                    View Submission History
+                                                </button>
                                                 <button type="button" wire:click="toggleComplete({{ $task['id'] }})" class="block w-full px-4 py-2 text-left text-sm font-semibold text-neutral-700 hover:bg-neutral-50">
                                                     {{ $task['is_completed'] ? 'Mark as To Do' : 'Mark as Completed' }}
                                                 </button>
@@ -229,7 +281,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center">
+                                    <td colspan="8" class="px-6 py-12 text-center">
                                         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-500">
                                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 6H7a2 2 0 01-2-2V4a2 2 0 012-2h7l5 5v13a2 2 0 01-2 2z" />
@@ -280,6 +332,134 @@
         </div>
 
         <aside class="space-y-6 lg:col-span-4">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <h2 class="text-sm font-semibold text-neutral-900">Task Submission</h2>
+                        <p class="mt-1 text-sm text-neutral-600">Open the submit modal to send a written update, upload evidence, and then review feedback history here.</p>
+                    </div>
+                    <button
+                        type="button"
+                        wire:click="openSubmitModal"
+                        class="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25"
+                    >
+                        Submit
+                    </button>
+                </div>
+
+                @if($selectedTask)
+                    <div class="mt-5 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-4">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-base font-semibold text-neutral-900">{{ $selectedTask['title'] }}</h3>
+                                <p class="mt-1 text-sm text-neutral-600">
+                                    {{ $selectedTask['internship_title'] }}@if($selectedTask['company_name']) • {{ $selectedTask['company_name'] }}@endif
+                                </p>
+                            </div>
+                            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset {{ $selectedTask['latest_submission_status_class'] }}">
+                                {{ $selectedTask['latest_submission_status_label'] }}
+                            </span>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <div class="font-semibold text-neutral-500">Task Status</div>
+                                <div class="mt-1 font-semibold text-neutral-900">{{ $selectedTask['status_label'] }}</div>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-neutral-500">Due Date</div>
+                                <div class="mt-1 font-semibold text-neutral-900">{{ $selectedTask['due_label'] }}</div>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-neutral-500">Submission History</div>
+                                <div class="mt-1 font-semibold text-neutral-900">{{ $selectedTask['submission_count'] }} {{ \Illuminate\Support\Str::plural('entry', $selectedTask['submission_count']) }}</div>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-neutral-500">Latest Update</div>
+                                <div class="mt-1 font-semibold text-neutral-900">{{ $selectedTask['latest_submission_label'] ?? 'Not submitted yet' }}</div>
+                            </div>
+                        </div>
+
+                        @if($selectedTask['description'])
+                            <div class="mt-4 rounded-2xl bg-white px-4 py-3 text-sm text-neutral-700">
+                                {{ $selectedTask['description'] }}
+                            </div>
+                        @endif
+
+                        @if($selectedTask['latest_submission_feedback'])
+                            <div class="mt-4 rounded-2xl border border-warning-100 bg-warning-50 px-4 py-3 text-sm text-warning-800">
+                                <div class="font-semibold">Latest Reviewer Feedback</div>
+                                <div class="mt-1">{{ $selectedTask['latest_submission_feedback'] }}</div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="mt-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-semibold text-neutral-900">Submission History</h3>
+                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Newest first</div>
+                        </div>
+
+                        <div class="mt-4 space-y-4">
+                            @forelse($selectedTask['history'] as $entry)
+                                <div class="rounded-2xl border {{ $entry['is_latest'] ? 'border-primary-200 bg-primary-50/40' : 'border-neutral-200 bg-white' }} px-4 py-4">
+                                    <div class="flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                            <div class="text-sm font-semibold text-neutral-900">{{ $entry['submitted_label'] }}</div>
+                                            @if($entry['is_latest'])
+                                                <div class="mt-1 text-xs font-semibold uppercase tracking-wide text-primary-700">Latest submission</div>
+                                            @endif
+                                        </div>
+                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset {{ $entry['status_class'] }}">
+                                            {{ $entry['status_label'] }}
+                                        </span>
+                                    </div>
+
+                                    <div class="mt-4 whitespace-pre-line text-sm text-neutral-700">{{ $entry['update_text'] }}</div>
+
+                                    @if($entry['attachments'])
+                                        <div class="mt-4 space-y-2">
+                                            <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Evidence</div>
+                                            @foreach($entry['attachments'] as $attachment)
+                                                <a
+                                                    href="{{ $attachment['url'] }}"
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm font-semibold text-primary-700 transition hover:border-primary-200 hover:bg-primary-50"
+                                                >
+                                                    <span class="truncate">{{ $attachment['name'] }}</span>
+                                                    <span class="shrink-0 text-neutral-500">{{ $attachment['size_label'] }}</span>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if($entry['reviewer_feedback'])
+                                        <div class="mt-4 rounded-2xl border border-warning-100 bg-warning-50 px-4 py-3 text-sm text-warning-800">
+                                            <div class="font-semibold">Reviewer Feedback</div>
+                                            <div class="mt-1">{{ $entry['reviewer_feedback'] }}</div>
+                                            @if($entry['reviewer_name'] || $entry['reviewed_label'])
+                                                <div class="mt-2 text-xs font-semibold text-warning-700">
+                                                    {{ $entry['reviewer_name'] ?? 'Reviewer' }}@if($entry['reviewed_label']) • {{ $entry['reviewed_label'] }}@endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            @empty
+                                <div class="rounded-2xl border border-dashed border-neutral-200 bg-white p-8 text-center text-sm text-neutral-600">
+                                    No submissions yet. Use the form above to send your first update.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                @else
+                    <div class="mt-5 rounded-2xl border border-dashed border-neutral-200 bg-white p-8 text-center text-sm text-neutral-600">
+                        Select a task to review its submission history, or use the submit modal to choose a task and send an update.
+                    </div>
+                @endif
+            </div>
+
             <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
                 <div class="flex items-start justify-between gap-3">
                     <div>
@@ -363,4 +543,133 @@
             </div>
         </aside>
     </div>
+
+    @if($showSubmitModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0">
+            <div wire:click="closeSubmitModal" class="fixed inset-0 bg-slate-900/60"></div>
+
+            <div class="relative mx-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-neutral-200/70">
+                <div class="flex items-start justify-between gap-4 border-b border-neutral-200 px-6 py-5">
+                    <div>
+                        <h2 class="text-lg font-semibold text-neutral-900">Submit Task Update</h2>
+                        <p class="mt-1 text-sm text-neutral-600">Choose a task, describe what you completed, and attach evidence files or images.</p>
+                    </div>
+                    <button
+                        type="button"
+                        wire:click="closeSubmitModal"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25"
+                    >
+                        <span class="sr-only">Close modal</span>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-5 px-6 py-5">
+                    <div>
+                        <label for="submission-task-id" class="text-sm font-semibold text-neutral-700">Choose Task</label>
+                        <select
+                            id="submission-task-id"
+                            wire:model.live="submissionTaskId"
+                            class="mt-2 h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
+                        >
+                            <option value="">Select a task</option>
+                            @foreach($submissionTasks as $taskOption)
+                                <option value="{{ $taskOption['id'] }}">
+                                    {{ $taskOption['title'] }} - {{ $taskOption['internship_title'] }} - Due {{ $taskOption['due_label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('submissionTaskId')<div class="mt-2 text-xs font-semibold text-danger-600">{{ $message }}</div>@enderror
+                    </div>
+
+                    @if($submissionTask)
+                        <div class="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-4">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    <h3 class="text-base font-semibold text-neutral-900">{{ $submissionTask['title'] }}</h3>
+                                    <p class="mt-1 text-sm text-neutral-600">
+                                        {{ $submissionTask['internship_title'] }}@if($submissionTask['company_name']) • {{ $submissionTask['company_name'] }}@endif
+                                    </p>
+                                </div>
+                                <div class="text-right text-sm">
+                                    <div class="font-semibold text-neutral-900">{{ $submissionTask['status_label'] }}</div>
+                                    <div class="mt-1 text-xs font-semibold text-neutral-500">Due {{ $submissionTask['due_label'] }}</div>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                                <span>{{ $submissionTask['submission_count'] }} {{ \Illuminate\Support\Str::plural('submission', $submissionTask['submission_count']) }}</span>
+                                <span>Latest: {{ $submissionTask['latest_submission_label'] ?? 'Not submitted yet' }}</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    <div>
+                        <label for="submission-update" class="text-sm font-semibold text-neutral-700">Written Update</label>
+                        <textarea
+                            id="submission-update"
+                            rows="5"
+                            wire:model.defer="submissionUpdate"
+                            placeholder="Summarize the work completed, blockers, and what these files prove."
+                            class="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm font-semibold text-neutral-900 shadow-soft placeholder:text-neutral-400 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
+                        ></textarea>
+                        @error('submissionUpdate')<div class="mt-2 text-xs font-semibold text-danger-600">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div>
+                        <label for="submission-files" class="text-sm font-semibold text-neutral-700">Evidence Files</label>
+                        <input
+                            id="submission-files"
+                            type="file"
+                            wire:model="submissionFiles"
+                            multiple
+                            class="mt-2 block w-full rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm font-semibold text-neutral-700 shadow-soft file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-700 hover:file:bg-primary-100"
+                        />
+                        <p class="mt-2 text-xs font-semibold text-neutral-500">Up to 5 files. Supported: PDF, images, Word, Excel, CSV, and TXT. Max 5 MB each.</p>
+                        @error('submissionFiles')<div class="mt-2 text-xs font-semibold text-danger-600">{{ $message }}</div>@enderror
+                        @error('submissionFiles.*')<div class="mt-2 text-xs font-semibold text-danger-600">{{ $message }}</div>@enderror
+
+                        @if($submissionFiles)
+                            <div class="mt-3 rounded-2xl bg-neutral-50 px-4 py-3">
+                                <div class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Ready to upload</div>
+                                <div class="mt-2 space-y-2">
+                                    @foreach($submissionFiles as $file)
+                                        <div class="flex items-center justify-between gap-3 text-sm font-semibold text-neutral-700">
+                                            <span class="truncate">{{ $file->getClientOriginalName() }}</span>
+                                            <span class="shrink-0 text-neutral-500">{{ number_format($file->getSize() / 1024, 1) }} KB</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 border-t border-neutral-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div wire:loading wire:target="submissionFiles,submitTaskUpdate" class="text-sm font-semibold text-primary-700">
+                        Uploading and saving...
+                    </div>
+                    <div class="flex items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            wire:click="closeSubmitModal"
+                            class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-700 shadow-soft transition hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            wire:click="submitTaskUpdate"
+                            wire:loading.attr="disabled"
+                            wire:target="submissionFiles,submitTaskUpdate"
+                            class="inline-flex h-11 items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {{ $submissionTask['submit_label'] ?? 'Submit Update' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

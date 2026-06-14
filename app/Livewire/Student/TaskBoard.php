@@ -8,13 +8,17 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class TaskBoard extends Component
 {
+    use WithFileUploads;
     use WithPagination;
 
     #[Url]
@@ -25,6 +29,16 @@ class TaskBoard extends Component
 
     #[Url]
     public int $perPage = 6;
+
+    public ?int $activeTaskId = null;
+
+    public ?int $submissionTaskId = null;
+
+    public bool $showSubmitModal = false;
+
+    public string $submissionUpdate = '';
+
+    public array $submissionFiles = [];
 
     public function updatedTab(): void
     {
@@ -41,20 +55,130 @@ class TaskBoard extends Component
         $this->resetPage();
     }
 
-    public function toggleComplete(int $taskId): void
+    public function updatedSubmissionFiles(): void
+    {
+        $this->validate($this->submissionFileRules(), $this->submissionMessages());
+    }
+
+    public function updatedSubmissionTaskId(?int $taskId): void
+    {
+        if ($taskId === null) {
+            return;
+        }
+
+        $profile = $this->ensureStudentProfile();
+        $task = $this->findOwnedTask($profile->id, $taskId);
+
+        Gate::authorize('submit', $task);
+
+        $this->submissionTaskId = $task->id;
+    }
+
+    public function selectTask(int $taskId): void
+    {
+        $profile = $this->ensureStudentProfile();
+        $task = $this->findOwnedTask($profile->id, $taskId);
+
+        Gate::authorize('submit', $task);
+
+        $this->activeTaskId = $task->id;
+    }
+
+    public function openSubmitModal(?int $taskId = null): void
+    {
+        $profile = $this->ensureStudentProfile();
+        $targetTaskId = $taskId
+            ?? $this->activeTaskId
+            ?? Task::query()
+                ->where('student_profile_id', $profile->id)
+                ->orderByRaw('due_at is null')
+                ->orderBy('due_at')
+                ->orderByDesc('created_at')
+                ->value('id');
+
+        if ($targetTaskId !== null) {
+            $task = $this->findOwnedTask($profile->id, $targetTaskId);
+
+            Gate::authorize('submit', $task);
+
+            $this->submissionTaskId = $task->id;
+        }
+
+        $this->resetSubmissionForm();
+        $this->showSubmitModal = true;
+    }
+
+    public function closeSubmitModal(): void
+    {
+        $this->showSubmitModal = false;
+        $this->resetSubmissionForm();
+    }
+
+    public function submitTaskUpdate(): void
     {
         $profile = $this->ensureStudentProfile();
 
-        $task = Task::query()
-            ->whereKey($taskId)
-            ->where('student_profile_id', $profile->id)
-            ->firstOrFail();
+        if ($this->submissionTaskId === null) {
+            $this->addError('submissionTaskId', 'Select a task before submitting an update.');
+
+            return;
+        }
+
+        $task = $this->findOwnedTask($profile->id, $this->submissionTaskId);
+
+        Gate::authorize('submit', $task);
+
+        $validated = $this->validate($this->submissionRules(), $this->submissionMessages());
+
+        $attachments = collect($this->dedupeSubmissionFiles($validated['submissionFiles'] ?? []))
+            ->map(function ($file) use ($profile, $task): array {
+                $path = $file->store('task-submissions/' . $profile->id . '/' . $task->id, 'public');
+
+                return [
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ];
+            })
+            ->values()
+            ->all();
+
+        $task->submissions()->create([
+            'student_profile_id' => $profile->id,
+            'status' => 'pending',
+            'update_text' => trim($validated['submissionUpdate']),
+            'attachments' => $attachments === [] ? null : $attachments,
+            'submitted_at' => now(),
+        ]);
+
+        $task->refresh();
+
+        if ($task->status === 'todo') {
+            $task->forceFill([
+                'status' => 'in_progress',
+                'completed_at' => null,
+            ])->save();
+        }
+
+        $this->activeTaskId = $task->id;
+        $this->showSubmitModal = false;
+        $this->resetSubmissionForm();
+        session()->flash('message', 'Task update submitted successfully.');
+    }
+
+    public function toggleComplete(int $taskId): void
+    {
+        $profile = $this->ensureStudentProfile();
+        $task = $this->findOwnedTask($profile->id, $taskId);
 
         if ($task->status === 'completed') {
             $task->forceFill([
                 'status' => 'todo',
                 'completed_at' => null,
             ])->save();
+
+            session()->flash('message', 'Task moved back to To Do.');
 
             return;
         }
@@ -63,6 +187,8 @@ class TaskBoard extends Component
             'status' => 'completed',
             'completed_at' => Carbon::now(),
         ])->save();
+
+        session()->flash('message', 'Task marked as completed.');
     }
 
     public function render(): View
@@ -78,6 +204,9 @@ class TaskBoard extends Component
             'counts' => $counts,
             'upcomingDeadlines' => $this->upcomingDeadlines($profile->id),
             'progress' => $progress,
+            'selectedTask' => $this->selectedTaskPayload($profile->id),
+            'submissionTask' => $this->submissionTaskPayload($profile->id),
+            'submissionTasks' => $this->submissionTaskOptions($profile->id),
         ])->extends('layouts.dashboard')->section('content');
     }
 
@@ -93,7 +222,8 @@ class TaskBoard extends Component
     private function tasksQuery(int $studentProfileId): Builder
     {
         $query = Task::query()
-            ->with(['internship.companyProfile'])
+            ->with(['internship.companyProfile', 'latestSubmission.reviewedBy'])
+            ->withCount('submissions')
             ->where('student_profile_id', $studentProfileId);
 
         $query = $this->applyTabFilter($query);
@@ -134,9 +264,10 @@ class TaskBoard extends Component
         $now = Carbon::now();
         $isCompleted = $task->status === 'completed';
         $isOverdue = ! $isCompleted && $dueAt !== null && $dueAt->isPast();
-
         $priority = $this->priorityForTask($task, $now);
         $dueMeta = $this->dueMeta($task, $now);
+        $latestSubmission = $task->latestSubmission;
+        $submissionStatus = $this->submissionStatusMeta($latestSubmission?->status);
 
         return [
             'id' => $task->id,
@@ -155,6 +286,15 @@ class TaskBoard extends Component
             'status_key' => $task->status,
             'is_overdue' => $isOverdue,
             'is_completed' => $isCompleted,
+            'submission_count' => (int) ($task->submissions_count ?? 0),
+            'latest_submission_status_label' => $submissionStatus['label'],
+            'latest_submission_status_class' => $submissionStatus['class'],
+            'latest_submission_feedback' => $latestSubmission?->reviewer_feedback
+                ? Str::limit((string) $latestSubmission->reviewer_feedback, 70)
+                : null,
+            'latest_submission_label' => $latestSubmission?->submitted_at?->format('M j, Y g:i A'),
+            'has_submission' => $latestSubmission !== null,
+            'is_selected' => $task->id === $this->activeTaskId,
         ];
     }
 
@@ -224,6 +364,214 @@ class TaskBoard extends Component
             'completed' => 'Completed',
             default => $status ? Str::headline($status) : '—',
         };
+    }
+
+    private function submissionStatusMeta(?string $status): array
+    {
+        return match ($status) {
+            'pending' => [
+                'label' => 'Pending',
+                'class' => 'bg-warning-50 text-warning-700 ring-warning-100',
+            ],
+            'reviewed' => [
+                'label' => 'Reviewed',
+                'class' => 'bg-success-50 text-success-700 ring-success-100',
+            ],
+            'rework' => [
+                'label' => 'Rework',
+                'class' => 'bg-danger-50 text-danger-700 ring-danger-100',
+            ],
+            default => [
+                'label' => 'No Submission',
+                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+            ],
+        };
+    }
+
+    private function selectedTaskPayload(int $studentProfileId): ?array
+    {
+        $task = $this->resolveActiveTask($studentProfileId);
+
+        if (! $task) {
+            return null;
+        }
+
+        $task->loadMissing(['submissions.reviewedBy', 'internship.companyProfile']);
+
+        $latestSubmission = $task->submissions->first();
+        $latestStatus = $this->submissionStatusMeta($latestSubmission?->status);
+
+        return [
+            'id' => $task->id,
+            'title' => (string) $task->title,
+            'description' => $task->description,
+            'internship_title' => $task->internship?->title ?? '—',
+            'company_name' => $task->internship?->companyProfile?->company_name,
+            'due_label' => $task->due_at?->format('M j, Y') ?? '—',
+            'status_label' => $this->statusLabel($task->status),
+            'submission_count' => (int) $task->submissions->count(),
+            'latest_submission_status_label' => $latestStatus['label'],
+            'latest_submission_status_class' => $latestStatus['class'],
+            'latest_submission_feedback' => $latestSubmission?->reviewer_feedback,
+            'latest_submission_label' => $latestSubmission?->submitted_at?->format('M j, Y g:i A'),
+            'submit_label' => $task->submissions->isEmpty() ? 'Submit Update' : 'Submit Resubmission',
+            'history' => $task->submissions->map(function ($submission, int $index): array {
+                $status = $this->submissionStatusMeta($submission->status);
+
+                return [
+                    'id' => $submission->id,
+                    'status_label' => $status['label'],
+                    'status_class' => $status['class'],
+                    'submitted_label' => $submission->submitted_at?->format('M j, Y g:i A') ?? '—',
+                    'update_text' => (string) $submission->update_text,
+                    'reviewer_feedback' => $submission->reviewer_feedback,
+                    'reviewer_name' => $submission->reviewedBy?->name,
+                    'reviewed_label' => $submission->reviewed_at?->format('M j, Y g:i A'),
+                    'attachments' => collect($submission->attachments ?? [])
+                        ->map(fn (array $attachment): array => [
+                            'name' => $attachment['name'] ?? 'Attachment',
+                            'size_label' => $this->formatBytes((int) ($attachment['size'] ?? 0)),
+                            'url' => ! empty($attachment['path']) ? Storage::disk('public')->url($attachment['path']) : null,
+                        ])
+                        ->filter(fn (array $attachment): bool => $attachment['url'] !== null)
+                        ->values()
+                        ->all(),
+                    'is_latest' => $index === 0,
+                ];
+            })->all(),
+        ];
+    }
+
+    private function submissionTaskPayload(int $studentProfileId): ?array
+    {
+        if ($this->submissionTaskId === null) {
+            return null;
+        }
+
+        $task = Task::query()
+            ->with(['internship.companyProfile', 'latestSubmission'])
+            ->withCount('submissions')
+            ->whereKey($this->submissionTaskId)
+            ->where('student_profile_id', $studentProfileId)
+            ->first();
+
+        if (! $task) {
+            return null;
+        }
+
+        return [
+            'id' => $task->id,
+            'title' => (string) $task->title,
+            'internship_title' => $task->internship?->title ?? '—',
+            'company_name' => $task->internship?->companyProfile?->company_name,
+            'due_label' => $task->due_at?->format('M j, Y') ?? '—',
+            'status_label' => $this->statusLabel($task->status),
+            'submission_count' => (int) ($task->submissions_count ?? 0),
+            'submit_label' => $task->submissions_count > 0 ? 'Submit Resubmission' : 'Submit Update',
+            'latest_submission_label' => $task->latestSubmission?->submitted_at?->format('M j, Y g:i A'),
+        ];
+    }
+
+    private function resolveActiveTask(int $studentProfileId): ?Task
+    {
+        $query = $this->tasksQuery($studentProfileId);
+
+        if ($this->activeTaskId !== null) {
+            $selected = (clone $query)->whereKey($this->activeTaskId)->first();
+
+            if ($selected) {
+                return $selected;
+            }
+        }
+
+        $selected = (clone $query)->first();
+        $this->activeTaskId = $selected?->id;
+
+        return $selected;
+    }
+
+    private function findOwnedTask(int $studentProfileId, int $taskId): Task
+    {
+        return Task::query()
+            ->whereKey($taskId)
+            ->where('student_profile_id', $studentProfileId)
+            ->firstOrFail();
+    }
+
+    private function submissionTaskOptions(int $studentProfileId): array
+    {
+        return Task::query()
+            ->with('internship.companyProfile')
+            ->where('student_profile_id', $studentProfileId)
+            ->orderByRaw('due_at is null')
+            ->orderBy('due_at')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn (Task $task): array => [
+                'id' => $task->id,
+                'title' => $task->title,
+                'status_label' => $this->statusLabel($task->status),
+                'internship_title' => $task->internship?->title ?? '—',
+                'company_name' => $task->internship?->companyProfile?->company_name,
+                'due_label' => $task->due_at?->format('M j, Y') ?? 'No due date',
+            ])
+            ->all();
+    }
+
+    private function submissionRules(): array
+    {
+        return [
+            'submissionUpdate' => ['required', 'string', 'min:10', 'max:5000'],
+            'submissionFiles' => ['nullable', 'array', 'max:5'],
+            'submissionFiles.*' => ['file', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx,csv,txt', 'max:5120'],
+        ];
+    }
+
+    private function submissionFileRules(): array
+    {
+        return [
+            'submissionFiles' => ['nullable', 'array', 'max:5'],
+            'submissionFiles.*' => ['file', 'mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx,csv,txt', 'max:5120'],
+        ];
+    }
+
+    private function submissionMessages(): array
+    {
+        return [
+            'submissionUpdate.required' => 'Add a short written update before submitting.',
+            'submissionUpdate.min' => 'Your written update must be at least 10 characters.',
+            'submissionFiles.max' => 'You can attach up to 5 evidence files.',
+            'submissionFiles.*.mimes' => 'Evidence files must be a PDF, image, document, spreadsheet, CSV, or text file.',
+            'submissionFiles.*.max' => 'Each evidence file must be 5 MB or smaller.',
+        ];
+    }
+
+    private function resetSubmissionForm(): void
+    {
+        $this->submissionUpdate = '';
+        $this->submissionFiles = [];
+        $this->resetValidation();
+    }
+
+    private function dedupeSubmissionFiles(array $files): array
+    {
+        return collect($files)
+            ->filter()
+            ->unique(function ($file): string {
+                $realPath = method_exists($file, 'getRealPath') ? $file->getRealPath() : null;
+                $hash = $realPath && is_readable($realPath)
+                    ? sha1_file($realPath) ?: 'unreadable'
+                    : 'missing-path';
+
+                return implode('|', [
+                    $file->getClientOriginalName(),
+                    (string) $file->getSize(),
+                    (string) $file->getMimeType(),
+                    $hash,
+                ]);
+            })
+            ->values()
+            ->all();
     }
 
     private function taskCounts(int $studentProfileId): array
@@ -334,12 +682,10 @@ class TaskBoard extends Component
             })
             ->all();
 
-        $style = $this->donutStyle($segments);
-
         return [
             'total' => $total,
             'segments' => $segments,
-            'style' => $style,
+            'style' => $this->donutStyle($segments),
         ];
     }
 
@@ -365,6 +711,20 @@ class TaskBoard extends Component
         }
 
         return 'conic-gradient(' . implode(', ', $parts) . ')';
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        if ($bytes <= 0) {
+            return '0 B';
+        }
+
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $power = (int) floor(log($bytes, 1024));
+        $power = min($power, count($units) - 1);
+        $value = $bytes / (1024 ** $power);
+
+        return number_format($value, $power === 0 ? 0 : 1) . ' ' . $units[$power];
     }
 
     private function ensureStudentProfile(): StudentProfile

@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\CompanyProfile;
 use App\Models\Internship;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class InternshipService
 {
@@ -92,17 +92,30 @@ class InternshipService
         return $paginator;
     }
 
-    public function postInternship(array $data): array
+    public function postInternship(CompanyProfile $companyProfile, array $data): Internship
     {
-        return [
-            'id' => Str::uuid()->toString(),
-            'title' => (string) ($data['title'] ?? ''),
-            'location' => (string) ($data['location'] ?? ''),
-            'duration' => (string) ($data['duration'] ?? ''),
-            'description' => (string) ($data['description'] ?? ''),
-            'status' => 'Submitted',
-            'submittedAt' => now()->toDateTimeString(),
-        ];
+        $durationInMonths = max(1, min(5, (int) ($data['duration_in_months'] ?? 1)));
+        $skills = array_values(array_filter(
+            array_map(
+                static fn (mixed $skill): string => trim((string) $skill),
+                is_array($data['required_skills'] ?? null) ? $data['required_skills'] : []
+            ),
+            static fn (string $skill): bool => $skill !== ''
+        ));
+
+        return Internship::query()->create([
+            'company_profile_id' => $companyProfile->id,
+            'title' => trim((string) ($data['title'] ?? '')),
+            'department' => trim((string) ($data['department'] ?? '')),
+            'location' => trim((string) ($data['location'] ?? '')),
+            'type' => trim((string) ($data['type'] ?? '')),
+            'duration' => $durationInMonths . ' month' . ($durationInMonths > 1 ? 's' : ''),
+            'description' => trim((string) ($data['description'] ?? '')),
+            'education_level' => trim((string) ($data['education_level'] ?? '')),
+            'other_requirements' => trim((string) ($data['other_requirements'] ?? '')),
+            'required_skills' => $skills,
+            'status' => 'open',
+        ]);
     }
 
     public function applyToInternship(int|string $internshipId, int $studentId, array $payload = []): array

@@ -65,4 +65,9 @@ class StudentProfile extends Model
     {
         return $this->hasMany(Report::class);
     }
+
+    public function taskSubmissions(): HasMany
+    {
+        return $this->hasMany(TaskSubmission::class);
+    }
 }

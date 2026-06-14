@@ -1,0 +1,9 @@
+- [x] Student task page shows a `Submit` button as the main submission entry point
+- [x] Clicking `Submit` opens a popup/modal on the student task page
+- [x] The popup allows the student to select the task they want to submit
+- [x] The popup includes a write-up field and evidence upload control
+- [x] File and image evidence remain supported and validated
+- [x] A successful popup submission creates a new `Pending` task submission
+- [x] Task context and submission history still remain clear after submission
+- [x] Focused tests cover the popup-based submit flow
+- [x] Edited files are free of diagnostics

@@ -1,0 +1,11 @@
+- [x] Student task screen includes a submission form with written update and evidence file attachments
+- [x] Students can create multiple submissions for the same task without losing prior history
+- [x] Submission history shows update content, files, timestamps, status, and reviewer feedback
+- [x] New submissions enter the `Pending` state
+- [x] Reviewers can mark a submission as `Reviewed`
+- [x] Reviewers can mark a submission as `Rework` and leave feedback
+- [x] Students can resubmit after `Rework`
+- [x] Supervisor and company access to review actions is authorized correctly
+- [x] File uploads are validated and stored safely for later review
+- [x] Focused tests cover submission, review, and resubmission behavior
+- [x] Edited files are free of diagnostics

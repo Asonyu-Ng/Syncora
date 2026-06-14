@@ -2,7 +2,7 @@
     <div class="flex items-start justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Internship Management</h1>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">List/edit stub</p>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Track the internships your company has published and monitor incoming interest.</p>
         </div>
 
         <a
@@ -26,4 +26,3 @@
         />
     </x-widget>
 </div>
-

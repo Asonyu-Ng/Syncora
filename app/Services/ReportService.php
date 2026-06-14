@@ -7,6 +7,27 @@ use Illuminate\Support\Str;
 
 class ReportService
 {
+    public function supervisorReportDefinitions(): array
+    {
+        return [
+            [
+                'type' => 'monthly',
+                'name' => 'Monthly Progress Report',
+                'description' => 'Summarizes intern progress, activities, and highlights for the month.',
+            ],
+            [
+                'type' => 'technical',
+                'name' => 'Technical Implementation Report',
+                'description' => 'Focuses on tools, implementation details, and technical outcomes.',
+            ],
+            [
+                'type' => 'final',
+                'name' => 'Final Internship Report',
+                'description' => 'Captures final deliverables, learnings, and evaluation outcomes.',
+            ],
+        ];
+    }
+
     public function generateStudentReport(string $prompt, ?int $studentId = null): string
     {
         $student = $studentId !== null ? " (student: {$studentId})" : '';

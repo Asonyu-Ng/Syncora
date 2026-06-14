@@ -1,0 +1,12 @@
+- [x] Logbooks screen matches provided layout: tabs, filters row, table, right summary panel, responsive collapse
+- [x] Logbooks tab/filters/search/pagination work and are DB-backed
+- [x] Logbooks approve/return updates `logbooks` status and approval metadata correctly
+- [x] Monitoring screen matches provided layout: summary cards, filters row, table with status and progress indicators, right panel
+- [x] Monitoring status/last-active computation is consistent and uses DB-backed timestamps
+- [x] Reports screen matches provided layout: filters, summary metric cards, tabs, report list, right panel
+- [x] Reports filters and tab switching behave correctly and are DB-backed where applicable
+- [x] Export actions queue jobs (logbooks, monitoring, reports) and provide user feedback
+- [x] Export jobs write output files to storage with stable naming and no request blocking
+- [x] Supervisor routes are protected by auth + supervisor role middleware
+- [x] Feature tests cover page access, logbook actions, and export job dispatch
+- [x] No visual regressions to other dashboards/pages and no new console errors

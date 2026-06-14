@@ -12,12 +12,14 @@ class Navbar extends Component
     public array $notifications = [];
     public string $currentPage = '';
     public string $pageTitle = '';
+    public string $pageSummary = '';
     public array $breadcrumbs = [];
 
     public function __construct(?string $pageTitle = null, ?array $breadcrumbs = null)
     {
         $this->pageTitle = $pageTitle ?: $this->resolveCurrentPage();
         $this->currentPage = $this->pageTitle;
+        $this->pageSummary = $this->resolvePageSummary($this->pageTitle);
         $this->breadcrumbs = $breadcrumbs ?: [
             ['label' => 'Dashboards', 'href' => '/__dashboards'],
             ['label' => $this->pageTitle, 'href' => null],
@@ -91,6 +93,22 @@ class Navbar extends Component
             'supervisor' => 'Supervisor Dashboard',
             'company' => 'Company Dashboard',
             default => 'Dashboard',
+        };
+    }
+
+    protected function resolvePageSummary(string $pageTitle): string
+    {
+        $normalized = strtolower($pageTitle);
+
+        return match (true) {
+            str_contains($normalized, 'dashboard') => 'Overview and recent activity',
+            str_contains($normalized, 'profile') => 'Personal details and workspace identity',
+            str_contains($normalized, 'setting') => 'Preferences and account controls',
+            str_contains($normalized, 'report') => 'Insights, exports, and submissions',
+            str_contains($normalized, 'task') => 'Assigned work and pending follow-ups',
+            str_contains($normalized, 'application') => 'Track submissions and progress',
+            str_contains($normalized, 'internship') => 'Open roles and internship activity',
+            default => 'Workspace overview',
         };
     }
 

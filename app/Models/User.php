@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class);
     }
+
+    public function reviewedTaskSubmissions(): HasMany
+    {
+        return $this->hasMany(TaskSubmission::class, 'reviewed_by_user_id');
+    }
 }

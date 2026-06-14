@@ -12,10 +12,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'company_profile_id',
     'supervisor_profile_id',
     'title',
+    'department',
     'location',
     'type',
     'duration',
     'description',
+    'education_level',
+    'other_requirements',
+    'required_skills',
     'start_date',
     'end_date',
     'status',
@@ -29,6 +33,7 @@ class Internship extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'required_skills' => 'array',
         ];
     }
 
@@ -67,4 +72,3 @@ class Internship extends Model
         return $this->hasMany(Report::class);
     }
 }
-
