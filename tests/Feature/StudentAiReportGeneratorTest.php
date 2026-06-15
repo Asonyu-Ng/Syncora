@@ -103,6 +103,56 @@ class StudentAiReportGeneratorTest extends TestCase
             ->assertDontSee('Other Report');
     }
 
+    public function test_component_shows_showcase_mode_when_student_has_little_data(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+        StudentProfile::firstOrCreate(['user_id' => $student->id]);
+
+        Livewire::actingAs($student)
+            ->test(AiReportGenerator::class)
+            ->assertSee('Showcase mode: preview with sample activity')
+            ->assertSee('Generate Sample Preview');
+    }
+
+    public function test_sample_preview_opens_modal_without_persisting_a_report(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+        StudentProfile::firstOrCreate(['user_id' => $student->id]);
+
+        Livewire::actingAs($student)
+            ->test(AiReportGenerator::class)
+            ->set('reportType', 'summary')
+            ->call('generateSamplePreview')
+            ->assertDispatched('open-modal', 'ai-report-preview')
+            ->assertSee('Showcase sample');
+
+        $this->assertDatabaseCount('reports', 0);
+    }
+
+    public function test_real_generation_requires_enough_real_activity(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+        $profile = StudentProfile::firstOrCreate(['user_id' => $student->id]);
+        $internship = $this->createInternship();
+
+        Application::create([
+            'student_profile_id' => $profile->id,
+            'internship_id' => $internship->id,
+            'status' => 'accepted',
+            'decided_at' => Carbon::now()->subDays(10),
+        ]);
+
+        Livewire::actingAs($student)
+            ->test(AiReportGenerator::class)
+            ->set('internshipId', $internship->id)
+            ->set('periodStart', Carbon::now()->subDays(14)->toDateString())
+            ->set('periodEnd', Carbon::now()->toDateString())
+            ->call('generateReport')
+            ->assertSet('status', 'Add a few more logbook entries and at least one completed task, or use Generate Sample Preview for a showcase version.');
+
+        $this->assertDatabaseCount('reports', 0);
+    }
+
     private function createInternship(): Internship
     {
         $companyUser = User::factory()->create(['role' => 'company']);
@@ -129,4 +179,3 @@ class StudentAiReportGeneratorTest extends TestCase
         ]);
     }
 }
-

@@ -4,41 +4,43 @@
             'title' => 'Smart Analysis',
             'body' => 'AI analyzes your logbook, tasks and activities to create comprehensive reports.',
             'icon' => 'sparkles',
-            'icon_bg' => 'bg-secondary-50 text-secondary-700',
+            'icon_bg' => 'bg-secondary-50 text-secondary-700 dark:bg-secondary-500/10 dark:text-secondary-200',
         ],
         [
             'title' => 'Time Saving',
             'body' => 'Generate detailed reports in minutes instead of hours of manual writing.',
             'icon' => 'clock',
-            'icon_bg' => 'bg-success-50 text-success-700',
+            'icon_bg' => 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-200',
         ],
         [
             'title' => 'Professional Quality',
             'body' => 'Get well-structured, academic reports ready for submission and evaluation.',
             'icon' => 'badge',
-            'icon_bg' => 'bg-warning-50 text-warning-700',
+            'icon_bg' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/10 dark:text-warning-200',
         ],
     ];
 
     $templateCards = [
-        ['key' => 'final', 'title' => 'Final Internship Report', 'desc' => 'Complete analysis of your internship experience', 'icon_bg' => 'bg-primary-50 text-primary-700'],
-        ['key' => 'monthly', 'title' => 'Monthly Progress Report', 'desc' => 'Monthly summary of activities and progress', 'icon_bg' => 'bg-success-50 text-success-700'],
-        ['key' => 'technical', 'title' => 'Technical Report', 'desc' => 'Technical skills, projects and implementation details', 'icon_bg' => 'bg-info-50 text-info-700'],
-        ['key' => 'summary', 'title' => 'Executive Summary', 'desc' => 'High-level overview for quick assessment', 'icon_bg' => 'bg-warning-50 text-warning-700'],
+        ['key' => 'final', 'title' => 'Final Internship Report', 'desc' => 'Complete analysis of your internship experience', 'icon_bg' => 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'],
+        ['key' => 'monthly', 'title' => 'Monthly Progress Report', 'desc' => 'Monthly summary of activities and progress', 'icon_bg' => 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-200'],
+        ['key' => 'technical', 'title' => 'Technical Report', 'desc' => 'Technical skills, projects and implementation details', 'icon_bg' => 'bg-info-50 text-info-700 dark:bg-info-500/10 dark:text-info-200'],
+        ['key' => 'summary', 'title' => 'Executive Summary', 'desc' => 'High-level overview for quick assessment', 'icon_bg' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/10 dark:text-warning-200'],
     ];
 @endphp
 
-<div class="space-y-8">
-    <div class="flex flex-col gap-3">
-        <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">AI Report Generator</h1>
-        <p class="text-sm text-neutral-600">Generate professional internship reports using AI based on your logbook entries and activities.</p>
-    </div>
+<div class="space-y-8 dark:[&_.text-neutral-900]:text-neutral-50 dark:[&_.text-neutral-700]:text-neutral-200 dark:[&_.text-neutral-600]:text-neutral-300 dark:[&_.text-neutral-500]:text-neutral-400 dark:[&_.text-neutral-400]:text-neutral-500">
+    <x-dashboard.page-header
+        badge="AI report workspace"
+        title="AI Reports"
+        description="Use your logbook entries, completed tasks, and selected evidence to build a cleaner first draft for review and submission."
+    />
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
+    <x-dashboard.two-column>
+        <x-slot:main>
+            <div class="space-y-6">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 @foreach($statCards as $card)
-                    <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                    <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                         <div class="flex items-start gap-3">
                             <div class="flex h-11 w-11 items-center justify-center rounded-2xl {{ $card['icon_bg'] }}">
                                 @if($card['icon'] === 'sparkles')
@@ -64,11 +66,58 @@
                 @endforeach
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-semibold text-neutral-900">Generate New Report</h2>
                         <p class="mt-1 text-sm text-neutral-600">Select report type and configure your preferences.</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-2xl border px-4 py-4 shadow-soft {{ $readiness['showcase_mode'] ? 'border-warning-200 bg-warning-50/80 dark:border-warning-500/20 dark:bg-warning-500/10' : 'border-success-200 bg-success-50/80 dark:border-success-500/20 dark:bg-success-500/10' }}">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset {{ $readiness['showcase_mode'] ? 'bg-warning-100 text-warning-800 ring-warning-200 dark:bg-warning-500/15 dark:text-warning-200 dark:ring-warning-500/20' : 'bg-success-100 text-success-800 ring-success-200 dark:bg-success-500/15 dark:text-success-200 dark:ring-success-500/20' }}">
+                                    {{ $readiness['headline'] }}
+                                </span>
+                                <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 ring-1 ring-inset ring-neutral-200 dark:bg-neutral-950 dark:text-neutral-300 dark:ring-neutral-800">
+                                    {{ $readiness['internship_label'] }}
+                                </span>
+                            </div>
+                            <p class="mt-3 text-sm leading-6 text-neutral-700 dark:text-neutral-200">{{ $readiness['message'] }}</p>
+
+                            <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div class="rounded-xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
+                                    <div class="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">Logbooks</div>
+                                    <div class="mt-2 text-lg font-semibold text-neutral-900">{{ $readiness['logbooks'] }}</div>
+                                </div>
+                                <div class="rounded-xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
+                                    <div class="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">Completed Tasks</div>
+                                    <div class="mt-2 text-lg font-semibold text-neutral-900">{{ $readiness['completed_tasks'] }}</div>
+                                </div>
+                                <div class="rounded-xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
+                                    <div class="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">Skills Found</div>
+                                    <div class="mt-2 text-lg font-semibold text-neutral-900">{{ $readiness['skills'] }}</div>
+                                </div>
+                            </div>
+
+                            @if(! empty($readiness['missing']))
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    @foreach($readiness['missing'] as $step)
+                                        <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 ring-1 ring-inset ring-neutral-200 dark:bg-neutral-950 dark:text-neutral-300 dark:ring-neutral-800">
+                                            {{ $step }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+
+                        @if($readiness['showcase_mode'])
+                            <button type="button" wire:click="generateSamplePreview" class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-warning-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-warning-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-warning-500/25">
+                                Generate Sample Preview
+                            </button>
+                        @endif
                     </div>
                 </div>
 
@@ -144,13 +193,15 @@
                             </div>
                         </div>
 
-                        <div class="rounded-2xl border border-primary-100 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-900">
-                            AI will use your logbook entries, tasks, and activities to generate a personalized report.
+                        <div class="rounded-2xl border border-primary-100 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-900 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-200">
+                            {{ $readiness['showcase_mode']
+                                ? 'Sample preview uses a curated set of internship highlights so the feature stays active for demos and early student accounts.'
+                                : 'AI will use your logbook entries, tasks, and activities to generate a personalized report from your own records.' }}
                         </div>
                     </div>
 
                     <div class="lg:col-span-5">
-                        <div class="flex h-full flex-col justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+                        <div class="flex h-full flex-col justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-900/60">
                             <div class="flex flex-col items-center text-center">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white">
                                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,15 +210,48 @@
                                 </div>
                                 <div class="mt-4 text-sm font-semibold text-neutral-900">Report Preview</div>
                                 <p class="mt-2 text-sm text-neutral-600">{{ $preview['body'] }}</p>
+                                <div class="mt-4 flex flex-wrap justify-center gap-2">
+                                    <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 ring-1 ring-inset ring-neutral-200 dark:bg-neutral-950 dark:text-neutral-300 dark:ring-neutral-800">
+                                        {{ $preview['source'] }}
+                                    </span>
+                                    <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-neutral-600 ring-1 ring-inset ring-neutral-200 dark:bg-neutral-950 dark:text-neutral-300 dark:ring-neutral-800">
+                                        {{ $preview['period'] }}
+                                    </span>
+                                </div>
+                                <p class="mt-3 text-xs font-semibold text-neutral-500">{{ $preview['internship'] }}</p>
                                 @if($preview['include_label'])
                                     <p class="mt-3 text-xs font-semibold text-neutral-500">{{ $preview['include_label'] }}</p>
                                 @endif
+                                <p class="mt-2 text-xs text-neutral-500">{{ $preview['summary'] }}</p>
+                                <div class="mt-4 grid w-full grid-cols-3 gap-2">
+                                    <div class="rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-950">
+                                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">Logbooks</div>
+                                        <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $preview['counts']['logbooks'] }}</div>
+                                    </div>
+                                    <div class="rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-950">
+                                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">Tasks</div>
+                                        <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $preview['counts']['tasks'] }}</div>
+                                    </div>
+                                    <div class="rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-950">
+                                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">Skills</div>
+                                        <div class="mt-1 text-sm font-semibold text-neutral-900">{{ $preview['counts']['skills'] }}</div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mt-6">
-                                <button type="button" wire:click="generateReport" class="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
-                                    Generate Report
-                                </button>
+                                @if($readiness['showcase_mode'])
+                                    <button type="button" wire:click="generateSamplePreview" class="inline-flex h-11 w-full items-center justify-center rounded-xl bg-warning-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-warning-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-warning-500/25">
+                                        Generate Sample Preview
+                                    </button>
+                                    <button type="button" wire:click="generateReport" class="mt-3 inline-flex h-11 w-full items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-900">
+                                        Generate From Real Data
+                                    </button>
+                                @else
+                                    <button type="button" wire:click="generateReport" class="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
+                                        Generate Report
+                                    </button>
+                                @endif
                                 @if($status !== '')
                                     <div class="mt-3 text-center text-xs font-semibold text-neutral-500">{{ $status }}</div>
                                 @endif
@@ -177,7 +261,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-semibold text-neutral-900">Report Templates</h2>
@@ -208,19 +292,31 @@
                     @endforeach
                 </div>
             </div>
-        </div>
+            </div>
+        </x-slot:main>
 
-        <aside class="space-y-6 lg:col-span-4">
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+        <x-slot:aside>
+            <x-widget title="Best results">
+                <div class="space-y-3 text-sm leading-6 text-neutral-600">
+                    <div class="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
+                        Keep logbook entries detailed and date ranges accurate before generating a report.
+                    </div>
+                    <div class="rounded-2xl border border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
+                        Use the assistant as a drafting accelerator, then review the final wording before submission.
+                    </div>
+                </div>
+            </x-widget>
+
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-semibold text-neutral-900">AI Assistant</h2>
                         <p class="mt-1 text-sm text-neutral-600">Personalized tips to improve your report quality.</p>
                     </div>
-                    <span class="inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 ring-1 ring-inset ring-primary-100">Beta</span>
+                    <span class="inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 ring-1 ring-inset ring-primary-100 dark:bg-primary-500/10 dark:text-primary-200 dark:ring-primary-500/20">Beta</span>
                 </div>
 
-                <div class="mt-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+                <div class="mt-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/60">
                     <div class="flex items-start gap-3">
                         <div class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-600 text-white">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +371,7 @@
                 </button>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <h2 class="text-sm font-semibold text-neutral-900">Recent Reports</h2>
                     <a href="{{ route('student.reports.ai') }}" class="text-sm font-semibold text-primary-700 hover:text-primary-800">View All</a>
@@ -292,7 +388,7 @@
                                 ? 'bg-info-50 text-info-700'
                                 : ($report['icon'] === 'calendar' ? 'bg-success-50 text-success-700' : 'bg-primary-50 text-primary-700');
                         @endphp
-                        <div class="flex items-start justify-between gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                        <div class="flex items-start justify-between gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                             <div class="flex min-w-0 items-start gap-3">
                                 <div class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl {{ $iconBg }}">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,33 +415,33 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <h2 class="text-sm font-semibold text-neutral-900">Report Statistics</h2>
                     <span class="text-sm font-semibold text-primary-700">This Internship Period</span>
                 </div>
 
                 <div class="mt-5 grid grid-cols-2 gap-4">
-                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                         <div class="text-xs font-semibold text-neutral-500">Reports Generated</div>
                         <div class="mt-2 text-2xl font-semibold text-neutral-900">{{ $stats['reports_generated'] }}</div>
                     </div>
-                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                         <div class="text-xs font-semibold text-neutral-500">Logbook Entries Analyzed</div>
                         <div class="mt-2 text-2xl font-semibold text-neutral-900">{{ $stats['logbooks_analyzed'] }}</div>
                     </div>
-                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                         <div class="text-xs font-semibold text-neutral-500">Tasks Completed</div>
                         <div class="mt-2 text-2xl font-semibold text-neutral-900">{{ $stats['tasks_completed'] }}</div>
                     </div>
-                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                    <div class="rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                         <div class="text-xs font-semibold text-neutral-500">Data Quality Score</div>
                         <div class="mt-2 text-2xl font-semibold text-neutral-900">{{ $stats['quality_score'] }}%</div>
                     </div>
                 </div>
             </div>
-        </aside>
-    </div>
+        </x-slot:aside>
+    </x-dashboard.two-column>
 
     <x-modal name="ai-report-preview" focusable maxWidth="2xl">
         <div class="p-6">
@@ -355,20 +451,28 @@
                     @if(isset($activeReport['generated']))
                         <p class="mt-2 text-sm font-semibold text-neutral-500">Generated {{ $activeReport['generated'] }}</p>
                     @endif
+                    @if(isset($activeReport['source']))
+                        <div class="mt-3 inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 ring-1 ring-inset ring-primary-100 dark:bg-primary-500/10 dark:text-primary-200 dark:ring-primary-500/20">
+                            {{ $activeReport['source'] }}
+                        </div>
+                    @endif
+                    @if(isset($activeReport['summary']))
+                        <p class="mt-3 text-sm text-neutral-600">{{ $activeReport['summary'] }}</p>
+                    @endif
                 </div>
-                <button type="button" wire:click="closeReport" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
+                <button type="button" wire:click="closeReport" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900" aria-label="Close preview">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <div class="mt-5 rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-800 whitespace-pre-line">
+            <div class="mt-5 rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-800 whitespace-pre-line dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                 {{ $activeReport['content'] ?? '' }}
             </div>
 
             <div class="mt-6 flex justify-end">
-                <button type="button" wire:click="closeReport" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50">
+                <button type="button" wire:click="closeReport" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-900">
                     Close
                 </button>
             </div>
@@ -402,7 +506,7 @@
                 </button>
 
                 @if($assistantAnswer !== '')
-                    <div class="rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-800 whitespace-pre-line">
+                    <div class="rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-800 whitespace-pre-line dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                         {{ $assistantAnswer }}
                     </div>
                 @endif

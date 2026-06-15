@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -178,9 +179,17 @@ class LogbookSubmission extends Component
         $internship = $this->currentInternship($profile);
         $internshipCard = $internship ? $this->presentInternshipCard($internship) : null;
         $counts = $this->logbookCounts($profile->id, $internship?->id);
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
+        $logbookHref = Route::has('student.logbook.index') ? route('student.logbook.index') : '/student/logbook';
 
         return view('livewire.student.logbook-submission', [
             'title' => 'Logbook Submission',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Logbook', 'href' => $logbookHref],
+                ['label' => 'Submission', 'href' => null],
+            ],
             'internshipCard' => $internshipCard,
             'entries' => $this->entriesPaginator($profile->id, $internship?->id),
             'tabs' => $this->tabs($counts),
@@ -272,27 +281,27 @@ class LogbookSubmission extends Component
         return match ($logbook->status) {
             'draft' => [
                 'label' => 'Draft',
-                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200 dark:bg-neutral-500/10 dark:text-neutral-200 dark:ring-neutral-500/20',
                 'meta' => 'Not submitted',
             ],
             'submitted' => [
                 'label' => 'Submitted',
-                'class' => 'bg-secondary-50 text-secondary-700 ring-secondary-100',
+                'class' => 'bg-secondary-50 text-secondary-700 ring-secondary-100 dark:bg-secondary-500/10 dark:text-secondary-200 dark:ring-secondary-500/20',
                 'meta' => 'Pending review',
             ],
             'approved' => [
                 'label' => 'Approved',
-                'class' => 'bg-success-50 text-success-700 ring-success-100',
+                'class' => 'bg-success-50 text-success-700 ring-success-100 dark:bg-success-500/10 dark:text-success-200 dark:ring-success-500/20',
                 'meta' => $logbook->approvedBy ? 'by ' . $logbook->approvedBy->name : null,
             ],
             'returned' => [
                 'label' => 'Returned',
-                'class' => 'bg-warning-50 text-warning-700 ring-warning-100',
+                'class' => 'bg-warning-50 text-warning-700 ring-warning-100 dark:bg-warning-500/10 dark:text-warning-200 dark:ring-warning-500/20',
                 'meta' => 'Needs updates',
             ],
             default => [
                 'label' => Str::headline((string) $logbook->status),
-                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200 dark:bg-neutral-500/10 dark:text-neutral-200 dark:ring-neutral-500/20',
                 'meta' => null,
             ],
         };

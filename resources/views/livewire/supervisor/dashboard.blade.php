@@ -1,130 +1,108 @@
+@php
+    $summaryCards = [
+        [
+            'value' => $stats['students'] ?? 0,
+            'label' => 'Students',
+            'meta' => 'Active supervisees',
+            'icon_bg' => 'bg-primary-50',
+            'icon_text' => 'text-primary-700',
+            'svg' => 'M17 20h5v-2a4 4 0 00-4-4h-1m-6 6H2v-2a4 4 0 014-4h1m6 6v-2a4 4 0 00-4-4H8m4-6a4 4 0 11-8 0 4 4 0 018 0zm6 4a3 3 0 100-6 3 3 0 000 6z',
+        ],
+        [
+            'value' => $stats['pending_approvals'] ?? 0,
+            'label' => 'Pending approvals',
+            'meta' => 'Logbooks waiting review',
+            'icon_bg' => 'bg-warning-50',
+            'icon_text' => 'text-warning-700',
+            'svg' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+        ],
+        [
+            'value' => $stats['tasks_assigned'] ?? 0,
+            'label' => 'Assigned tasks',
+            'meta' => 'Current workload in the system',
+            'icon_bg' => 'bg-info-50',
+            'icon_text' => 'text-info-700',
+            'svg' => 'M9 5h6M9 9h6m-7 4h8m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2h-3l-1-1H9L8 5H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+        ],
+        [
+            'value' => $stats['tasks_completed'] ?? 0,
+            'label' => 'Completed tasks',
+            'meta' => 'Closed this month',
+            'icon_bg' => 'bg-success-50',
+            'icon_text' => 'text-success-700',
+            'svg' => 'M5 13l4 4L19 7',
+        ],
+        [
+            'value' => ($stats['completion_rate'] ?? 0) . '%',
+            'label' => 'Completion rate',
+            'meta' => 'Average student progress',
+            'icon_bg' => 'bg-danger-50',
+            'icon_text' => 'text-danger-600',
+            'svg' => 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6',
+        ],
+    ];
+@endphp
+
 <div class="space-y-6">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-2xl font-semibold text-neutral-900 sm:text-3xl">{{ $summary['greeting'] ?? 'Welcome back' }}</h1>
-            <p class="mt-2 text-sm text-neutral-600">Here’s an overview of your supervision activities.</p>
-        </div>
+    <div class="overflow-hidden rounded-[28px] border border-neutral-200 bg-gradient-to-r from-white via-white to-primary-50/60 shadow-card">
+        <div class="grid gap-6 px-6 py-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+            <div class="min-w-0">
+                <span class="inline-flex items-center rounded-full border border-primary-100 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-soft">
+                    Supervisor overview
+                </span>
+                <h1 class="mt-4 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-[2.1rem]">{{ $summary['greeting'] ?? 'Welcome back' }}</h1>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-neutral-600">
+                    Stay on top of approvals, student momentum, and upcoming follow-up from one calmer review surface.
+                </p>
 
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-            <button type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-700 shadow-soft transition hover:bg-neutral-50">
-                <svg class="h-4 w-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {{ $summary['date_range_label'] ?? '' }}
-            </button>
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <a href="{{ route('supervisor.logbooks.index') }}" class="inline-flex h-11 items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500">
+                        Review logbooks
+                    </a>
+                    <a href="{{ route('supervisor.reports.index') }}" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-800 shadow-soft transition hover:bg-neutral-50">
+                        Open reports
+                    </a>
+                </div>
+            </div>
 
-            <a href="{{ route('supervisor.reports.index') }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l3-3m-3 3l-3-3m9 9H6a2 2 0 01-2-2v-3m16 3v-3a2 2 0 00-2-2" />
-                </svg>
-                Download Report
-            </a>
+            <div class="rounded-3xl border border-neutral-200 bg-white/90 p-5 shadow-soft">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Current Window</p>
+                        <h2 class="mt-2 text-lg font-semibold tracking-tight text-neutral-950">{{ $summary['date_range_label'] ?? '' }}</h2>
+                    </div>
+                    <span class="inline-flex items-center rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 ring-1 ring-inset ring-success-100">
+                        Monitoring live
+                    </span>
+                </div>
+
+                <div class="mt-5 grid gap-3">
+                    <a href="{{ route('supervisor.monitoring.index') }}" class="rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft transition hover:bg-neutral-50">
+                        <div class="text-sm font-semibold text-neutral-900">Internship monitoring</div>
+                        <p class="mt-1 text-sm leading-6 text-neutral-600">Spot inactive placements, follow up on engagement, and watch risk signals.</p>
+                    </a>
+                    <a href="{{ route('supervisor.tasks.index') }}" class="rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft transition hover:bg-neutral-50">
+                        <div class="text-sm font-semibold text-neutral-900">Task management</div>
+                        <p class="mt-1 text-sm leading-6 text-neutral-600">Check task volume, progress, and items that may require closer intervention.</p>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        @foreach ($summaryCards as $card)
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card">
+                <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl {{ $card['icon_bg'] }} {{ $card['icon_text'] }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-6 6H2v-2a4 4 0 014-4h1m6 6v-2a4 4 0 00-4-4H8m4-6a4 4 0 11-8 0 4 4 0 018 0zm6 4a3 3 0 100-6 3 3 0 000 6z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['svg'] }}" />
                     </svg>
                 </div>
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
-                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6 10a2 2 0 114 0 2 2 0 01-4 0zm6 0a2 2 0 114 0 2 2 0 01-4 0zM2 10a2 2 0 114 0 2 2 0 01-4 0z" />
-                    </svg>
-                </button>
+                <div class="mt-5 text-2xl font-semibold tracking-tight text-neutral-950">{{ $card['value'] }}</div>
+                <div class="mt-1 text-sm font-semibold text-neutral-800">{{ $card['label'] }}</div>
+                <div class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-400">{{ $card['meta'] }}</div>
             </div>
-            <div class="mt-4">
-                <div class="text-2xl font-semibold text-neutral-900">{{ $stats['students'] ?? 0 }}</div>
-                <div class="mt-1 text-sm font-semibold text-neutral-700">Total Students</div>
-                <div class="mt-2 text-xs font-semibold text-neutral-500">Under your supervision</div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-success-50 text-success-700">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
-                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6 10a2 2 0 114 0 2 2 0 01-4 0zm6 0a2 2 0 114 0 2 2 0 01-4 0zM2 10a2 2 0 114 0 2 2 0 01-4 0z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="mt-4">
-                <div class="text-2xl font-semibold text-neutral-900">{{ $stats['pending_approvals'] ?? 0 }}</div>
-                <div class="mt-1 text-sm font-semibold text-neutral-700">Pending Approvals</div>
-                <div class="mt-2 text-xs font-semibold text-neutral-500">Logbooks to review</div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning-50 text-warning-700">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6M9 9h6m-7 4h8m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2h-3l-1-1H9L8 5H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                </div>
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
-                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6 10a2 2 0 114 0 2 2 0 01-4 0zm6 0a2 2 0 114 0 2 2 0 01-4 0zM2 10a2 2 0 114 0 2 2 0 01-4 0z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="mt-4">
-                <div class="text-2xl font-semibold text-neutral-900">{{ $stats['tasks_assigned'] ?? 0 }}</div>
-                <div class="mt-1 text-sm font-semibold text-neutral-700">Tasks Assigned</div>
-                <div class="mt-2 text-xs font-semibold text-neutral-500">Active tasks</div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-info-50 text-info-700">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
-                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6 10a2 2 0 114 0 2 2 0 01-4 0zm6 0a2 2 0 114 0 2 2 0 01-4 0zM2 10a2 2 0 114 0 2 2 0 01-4 0z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="mt-4">
-                <div class="text-2xl font-semibold text-neutral-900">{{ $stats['tasks_completed'] ?? 0 }}</div>
-                <div class="mt-1 text-sm font-semibold text-neutral-700">Tasks Completed</div>
-                <div class="mt-2 text-xs font-semibold text-neutral-500">This month</div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-danger-50 text-danger-600">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3v18m0 0l-4-4m4 4l4-4M4 7h16" />
-                    </svg>
-                </div>
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
-                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6 10a2 2 0 114 0 2 2 0 01-4 0zm6 0a2 2 0 114 0 2 2 0 01-4 0zM2 10a2 2 0 114 0 2 2 0 01-4 0z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="mt-4">
-                <div class="text-2xl font-semibold text-neutral-900">{{ $stats['completion_rate'] ?? 0 }}%</div>
-                <div class="mt-1 text-sm font-semibold text-neutral-700">Completion Rate</div>
-                <div class="mt-2 flex items-center justify-between text-xs font-semibold text-neutral-500">
-                    <span>Average progress</span>
-                    <span class="text-success-600">↑ 1.8%</span>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">

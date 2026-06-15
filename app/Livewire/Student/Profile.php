@@ -5,6 +5,7 @@ namespace App\Livewire\Student;
 use App\Models\StudentProfile;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -112,9 +113,22 @@ class Profile extends Component
         $profile = $user?->studentProfile;
 
         $academic = $this->academicDetails($user, $profile);
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
+        $profileHref = Route::has('student.profile') ? route('student.profile') : '/student/profile';
+        $tabLabel = collect($this->tabs())->firstWhere('key', $this->tab)['label'] ?? null;
+        $breadcrumbs = [
+            ['label' => 'Dashboards', 'href' => '/__dashboards'],
+            ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+            ['label' => 'My Profile', 'href' => $this->tab === 'profile' ? null : $profileHref],
+        ];
+
+        if ($this->tab !== 'profile' && $tabLabel) {
+            $breadcrumbs[] = ['label' => $tabLabel, 'href' => null];
+        }
 
         return view('livewire.student.profile', [
-            'title' => 'Profile',
+            'title' => 'My Profile',
+            'breadcrumbs' => $breadcrumbs,
             'tabs' => $this->tabs(),
             'profileCard' => $this->profileCard($user, $profile),
             'aboutCard' => $this->aboutCard($profile),

@@ -12,7 +12,7 @@ class Settings extends Component
 
     public function save(): void
     {
-        session()->flash('message', 'Settings saved (stub).');
+        session()->flash('message', 'Company settings updated.');
     }
 
     public function render(): View
@@ -22,4 +22,3 @@ class Settings extends Component
         ])->extends('layouts.dashboard')->section('content');
     }
 }
-

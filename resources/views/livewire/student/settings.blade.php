@@ -1,35 +1,35 @@
-<div class="space-y-8">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">Settings</h1>
-            <p class="mt-2 text-sm text-neutral-600">Manage your account preferences and keep your information secure.</p>
-        </div>
-    </div>
+<div class="space-y-8 dark:[&_.text-neutral-900]:text-neutral-50 dark:[&_.text-neutral-700]:text-neutral-200 dark:[&_.text-neutral-600]:text-neutral-300 dark:[&_.text-neutral-500]:text-neutral-400 dark:[&_.text-neutral-400]:text-neutral-500">
+    <x-dashboard.page-header
+        badge="Account settings"
+        title="Settings"
+        description="Control notifications, privacy, appearance, and account actions from one consistent settings workspace."
+    />
 
     @if(session('message'))
-        <div class="rounded-2xl border border-primary-200 bg-primary-50 px-5 py-4 text-sm font-semibold text-primary-900 shadow-soft">
+        <div class="rounded-2xl border border-primary-200 bg-primary-50 px-5 py-4 text-sm font-semibold text-primary-900 shadow-soft dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-200">
             {{ session('message') }}
         </div>
     @endif
 
-    <div class="flex overflow-x-auto border-b border-neutral-200 pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
+    <div class="flex overflow-x-auto border-b border-neutral-200 pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 dark:border-neutral-800">
         @foreach($tabs as $entry)
             @php $active = $tab === $entry['key']; @endphp
 
             <button
                 type="button"
                 wire:click="$set('tab', '{{ $entry['key'] }}')"
-                class="mr-6 whitespace-nowrap border-b-2 pb-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25 {{ $active ? 'border-primary-600 text-primary-700' : 'border-transparent text-neutral-600 hover:text-neutral-900' }}"
+                class="mr-6 whitespace-nowrap border-b-2 pb-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25 {{ $active ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-200' : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100' }}"
             >
                 {{ $entry['label'] }}
             </button>
         @endforeach
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
+    <x-dashboard.two-column>
+        <x-slot:main>
+            <div class="space-y-6">
             @if($tab === 'general')
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4 border-b border-neutral-200 px-5 py-4 sm:px-6">
                         <div>
                             <h2 class="text-sm font-semibold text-neutral-900">Profile Information</h2>
@@ -51,7 +51,7 @@
                                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-base font-semibold text-neutral-700">
                                         {{ Str::of($profileCard['name'] ?? 'S')->trim()->substr(0, 1)->upper() }}
                                     </div>
-                                    <button type="button" class="absolute -bottom-2 -right-2 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft">
+                                    <button type="button" class="absolute -bottom-2 -right-2 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400" aria-label="Update profile photo">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h2l2-2h6l2 2h2a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -79,7 +79,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4 border-b border-neutral-200 px-5 py-4 sm:px-6">
                         <div>
                             <h2 class="text-sm font-semibold text-neutral-900">Email Notifications</h2>
@@ -105,7 +105,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" wire:model.live="notifyApplicationUpdates" class="sr-only peer">
-                                <div class="h-6 w-11 rounded-full bg-neutral-200 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
+                                <div class="h-6 w-11 rounded-full bg-neutral-200 dark:bg-neutral-800 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
                             </label>
                         </div>
 
@@ -123,7 +123,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" wire:model.live="notifyTaskReminders" class="sr-only peer">
-                                <div class="h-6 w-11 rounded-full bg-neutral-200 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
+                                <div class="h-6 w-11 rounded-full bg-neutral-200 dark:bg-neutral-800 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
                             </label>
                         </div>
 
@@ -141,7 +141,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" wire:model.live="notifyLogbookUpdates" class="sr-only peer">
-                                <div class="h-6 w-11 rounded-full bg-neutral-200 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
+                                <div class="h-6 w-11 rounded-full bg-neutral-200 dark:bg-neutral-800 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
                             </label>
                         </div>
 
@@ -159,13 +159,13 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" wire:model.live="notifyAnnouncements" class="sr-only peer">
-                                <div class="h-6 w-11 rounded-full bg-neutral-200 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
+                                <div class="h-6 w-11 rounded-full bg-neutral-200 dark:bg-neutral-800 peer-checked:bg-primary-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5"></div>
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4 border-b border-neutral-200 px-5 py-4 sm:px-6">
                         <div>
                             <h2 class="text-sm font-semibold text-neutral-900">Privacy Settings</h2>
@@ -179,7 +179,7 @@
                                 <div class="text-sm font-semibold text-neutral-900">Profile Visibility</div>
                                 <div class="mt-1 text-sm text-neutral-600">Choose who can see your profile information.</div>
                             </div>
-                            <select wire:model.live="privacyProfileVisibility" class="h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 sm:w-72">
+                            <select wire:model.live="privacyProfileVisibility" class="h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 sm:w-72 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                                 @foreach($privacyVisibilityOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
@@ -198,7 +198,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="px-5 py-4 sm:px-6 border-b border-neutral-200">
                         <h2 class="text-sm font-semibold text-neutral-900">Language & Region</h2>
                         <p class="mt-1 text-sm text-neutral-600">Set your preferred language and regional settings.</p>
@@ -207,7 +207,7 @@
                     <div class="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-2 sm:px-6">
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Language</label>
-                            <select wire:model.live="language" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20">
+                            <select wire:model.live="language" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                                 @foreach($languageOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
@@ -215,7 +215,7 @@
                         </div>
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Time Zone</label>
-                            <select wire:model.live="timezone" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20">
+                            <select wire:model.live="timezone" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                                 @foreach($timezoneOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
@@ -224,7 +224,7 @@
                     </div>
                 </div>
             @elseif($tab === 'notifications')
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="px-5 py-4 sm:px-6 border-b border-neutral-200">
                         <h2 class="text-sm font-semibold text-neutral-900">Notifications</h2>
                         <p class="mt-1 text-sm text-neutral-600">Choose what you want to be notified about.</p>
@@ -274,14 +274,14 @@
                     </div>
                 </div>
             @elseif($tab === 'privacy')
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="px-5 py-4 sm:px-6 border-b border-neutral-200">
                         <h2 class="text-sm font-semibold text-neutral-900">Privacy</h2>
                         <p class="mt-1 text-sm text-neutral-600">Manage your privacy and data preferences.</p>
                     </div>
                     <div class="px-5 py-5 sm:px-6">
                         <label class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Profile Visibility</label>
-                        <select wire:model.live="privacyProfileVisibility" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20">
+                        <select wire:model.live="privacyProfileVisibility" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                             @foreach($privacyVisibilityOptions as $value => $label)
                                 <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
@@ -289,7 +289,7 @@
                     </div>
                 </div>
             @elseif($tab === 'security')
-                <div class="rounded-2xl border border-neutral-200 bg-white p-10 text-center shadow-card">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-10 text-center shadow-card dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-500">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.105 0 2-.895 2-2V7a2 2 0 00-4 0v2c0 1.105.895 2 2 2zm0 0v2m8 4v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
@@ -299,14 +299,14 @@
                     <p class="mt-2 text-sm text-neutral-600">Use the panel on the right to manage security options.</p>
                 </div>
             @else
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="px-5 py-4 sm:px-6 border-b border-neutral-200">
                         <h2 class="text-sm font-semibold text-neutral-900">Appearance</h2>
                         <p class="mt-1 text-sm text-neutral-600">Customize how Syncora looks for you.</p>
                     </div>
                     <div class="px-5 py-5 sm:px-6">
                         <label class="text-xs font-semibold uppercase tracking-wide text-neutral-500">Theme</label>
-                        <select wire:model.live="theme" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20">
+                        <select wire:model.live="theme" class="mt-2 h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100">
                             @foreach($themeOptions as $value => $label)
                                 <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
@@ -314,16 +314,17 @@
                     </div>
                 </div>
             @endif
-        </div>
+            </div>
+        </x-slot:main>
 
-        <aside class="space-y-6 lg:col-span-4">
+        <x-slot:aside>
             @if($tab === 'security')
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <h2 class="text-sm font-semibold text-neutral-900">Account Security</h2>
                     <p class="mt-2 text-sm text-neutral-600">Keep your account secure and protected.</p>
 
                     <div class="mt-5 space-y-4">
-                        <div class="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft">
+                        <div class="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                             <div class="min-w-0">
                                 <div class="text-sm font-semibold text-neutral-900">Password</div>
                                 <div class="mt-1 text-sm text-neutral-600">••••••••</div>
@@ -333,7 +334,7 @@
                             </button>
                         </div>
 
-                        <div class="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft">
+                        <div class="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                             <div class="min-w-0">
                                 <div class="text-sm font-semibold text-neutral-900">Two-Factor Authentication</div>
                                 <div class="mt-1 text-sm text-neutral-600">Add an extra layer of security.</div>
@@ -343,7 +344,7 @@
                             </button>
                         </div>
 
-                        <div class="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft">
+                        <div class="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                             <div class="min-w-0">
                                 <div class="text-sm font-semibold text-neutral-900">Active Sessions</div>
                                 <div class="mt-1 text-sm text-neutral-600">Manage your active sessions.</div>
@@ -356,7 +357,7 @@
                 </div>
             @endif
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <h2 class="text-sm font-semibold text-neutral-900">Quick Actions</h2>
                 <div class="mt-5 space-y-2">
                     <button type="button" wire:click="quickAction('download_data')" class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">
@@ -386,7 +387,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,8 +403,8 @@
                     </div>
                 </div>
             </div>
-        </aside>
-    </div>
+        </x-slot:aside>
+    </x-dashboard.two-column>
 
     <x-modal name="student-password-change" focusable maxWidth="xl">
         <div class="p-6">
@@ -412,7 +413,7 @@
                     <h2 class="text-lg font-semibold text-neutral-900">Change password</h2>
                     <p class="mt-2 text-sm text-neutral-600">Use a strong password you don’t use elsewhere.</p>
                 </div>
-                <button type="button" x-on:click="$dispatch('close-modal', 'student-password-change')" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
+                <button type="button" x-on:click="$dispatch('close-modal', 'student-password-change')" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900" aria-label="Close modal">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -426,7 +427,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-neutral-900" for="current_password">Current password</label>
                     <div class="mt-2">
-                        <input id="current_password" name="current_password" type="password" autocomplete="current-password" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                        <input id="current_password" name="current_password" type="password" autocomplete="current-password" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100" />
                         <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
                     </div>
                 </div>
@@ -435,7 +436,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-neutral-900" for="password">New password</label>
                         <div class="mt-2">
-                            <input id="password" name="password" type="password" autocomplete="new-password" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="password" name="password" type="password" autocomplete="new-password" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100" />
                             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
                         </div>
                     </div>
@@ -443,14 +444,14 @@
                     <div>
                         <label class="block text-sm font-semibold text-neutral-900" for="password_confirmation">Confirm password</label>
                         <div class="mt-2">
-                            <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100" />
                             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
                         </div>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-                    <button type="button" x-on:click="$dispatch('close-modal', 'student-password-change')" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50">
+                    <button type="button" x-on:click="$dispatch('close-modal', 'student-password-change')" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-900">
                         Cancel
                     </button>
                     <button type="submit" class="inline-flex h-11 items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">

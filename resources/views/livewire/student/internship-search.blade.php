@@ -17,23 +17,23 @@
         : 0;
 @endphp
 
-<div class="space-y-8">
+<div class="space-y-8 dark:[&_.text-neutral-900]:text-neutral-50 dark:[&_.text-neutral-700]:text-neutral-200 dark:[&_.text-neutral-600]:text-neutral-300 dark:[&_.text-neutral-500]:text-neutral-400 dark:[&_.text-neutral-400]:text-neutral-500">
     @if(session()->has('message'))
         <div class="rounded-2xl border border-primary-100 bg-primary-50 px-5 py-4 text-sm font-semibold text-primary-800 shadow-soft">
             {{ session('message') }}
         </div>
     @endif
 
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">Find Internships</h1>
-            <p class="mt-2 text-sm text-neutral-600">Search roles by keywords, location, and type. Fine-tune results with advanced filters.</p>
-        </div>
-    </div>
+    <x-dashboard.page-header
+        badge="Internship search"
+        title="Internship Search"
+        description="Search by keywords, location, work type, and other filters, then save useful searches to return faster next time."
+    />
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
-            <div x-data="{ moreFilters: false }" class="rounded-2xl border border-neutral-200 bg-white shadow-card">
+    <x-dashboard.two-column>
+        <x-slot:main>
+            <div class="space-y-6">
+            <div x-data="{ moreFilters: false }" class="rounded-2xl border border-neutral-200 bg-white shadow-card dark:border-neutral-800 dark:bg-neutral-950">
                 <form wire:submit.prevent="search" class="p-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
                         <div class="md:col-span-6">
@@ -49,7 +49,7 @@
                                 <select
                                     id="internship-location"
                                     wire:model.defer="location"
-                                    class="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-sm text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
+                                    class="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-sm text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
                                 >
                                     <option value="">Any location</option>
                                     <option value="Remote">Remote</option>
@@ -66,7 +66,7 @@
                                 <select
                                     id="internship-type"
                                     wire:model.defer="type"
-                                    class="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-sm text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
+                                    class="h-12 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-sm text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
                                 >
                                     <option value="">Any type</option>
                                     <option value="On-site">On-site</option>
@@ -341,9 +341,10 @@
             <div class="pt-2">
                 {{ $results->withQueryString()->onEachSide(1)->links() }}
             </div>
-        </div>
+            </div>
+        </x-slot:main>
 
-        <aside class="space-y-6 lg:col-span-4">
+        <x-slot:aside>
             <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
                 <h2 class="text-sm font-semibold text-neutral-900">Quick Actions</h2>
                 <div class="mt-4 space-y-3">
@@ -463,8 +464,8 @@
                     Update Profile
                 </a>
             </div>
-        </aside>
-    </div>
+        </x-slot:aside>
+    </x-dashboard.two-column>
 
     <x-modal name="save-search" focusable>
         <div class="p-6">

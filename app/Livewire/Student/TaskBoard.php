@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
@@ -196,9 +197,17 @@ class TaskBoard extends Component
         $profile = $this->ensureStudentProfile();
         $counts = $this->taskCounts($profile->id);
         $progress = $this->taskProgressSnapshot($counts);
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
+        $tasksHref = Route::has('student.tasks.board') ? route('student.tasks.board') : '/student/tasks';
 
         return view('livewire.student.task-board', [
             'title' => 'Task Board',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Tasks', 'href' => $tasksHref],
+                ['label' => 'Task Board', 'href' => null],
+            ],
             'tasks' => $this->tasksPaginator($profile->id),
             'tabs' => $this->tabs($counts),
             'counts' => $counts,
@@ -301,13 +310,13 @@ class TaskBoard extends Component
     private function dueMeta(Task $task, Carbon $now): array
     {
         if ($task->status === 'completed') {
-            return ['label' => 'Completed', 'class' => 'text-success-700'];
+            return ['label' => 'Completed', 'class' => 'text-success-700 dark:text-success-200'];
         }
 
         $dueAt = $task->due_at instanceof Carbon ? $task->due_at : null;
 
         if ($dueAt === null) {
-            return ['label' => null, 'class' => 'text-neutral-500'];
+            return ['label' => null, 'class' => 'text-neutral-500 dark:text-neutral-400'];
         }
 
         $days = $now->startOfDay()->diffInDays($dueAt->copy()->startOfDay(), false);
@@ -317,16 +326,18 @@ class TaskBoard extends Component
 
             return [
                 'label' => $count === 1 ? '1 day overdue' : $count . ' days overdue',
-                'class' => 'text-danger-700',
+                'class' => 'text-danger-700 dark:text-danger-300',
             ];
         }
 
         if ($days === 0) {
-            return ['label' => 'Due today', 'class' => 'text-warning-700'];
+            return ['label' => 'Due today', 'class' => 'text-warning-700 dark:text-warning-200'];
         }
 
         $label = $days === 1 ? '1 day left' : $days . ' days left';
-        $class = $days <= 2 ? 'text-danger-700' : ($days <= 7 ? 'text-warning-700' : 'text-neutral-500');
+        $class = $days <= 2
+            ? 'text-danger-700 dark:text-danger-300'
+            : ($days <= 7 ? 'text-warning-700 dark:text-warning-200' : 'text-neutral-500 dark:text-neutral-400');
 
         return ['label' => $label, 'class' => $class];
     }
@@ -371,19 +382,19 @@ class TaskBoard extends Component
         return match ($status) {
             'pending' => [
                 'label' => 'Pending',
-                'class' => 'bg-warning-50 text-warning-700 ring-warning-100',
+                'class' => 'bg-warning-50 text-warning-700 ring-warning-100 dark:bg-warning-500/10 dark:text-warning-200 dark:ring-warning-500/20',
             ],
             'reviewed' => [
                 'label' => 'Reviewed',
-                'class' => 'bg-success-50 text-success-700 ring-success-100',
+                'class' => 'bg-success-50 text-success-700 ring-success-100 dark:bg-success-500/10 dark:text-success-200 dark:ring-success-500/20',
             ],
             'rework' => [
                 'label' => 'Rework',
-                'class' => 'bg-danger-50 text-danger-700 ring-danger-100',
+                'class' => 'bg-danger-50 text-danger-700 ring-danger-100 dark:bg-danger-500/10 dark:text-danger-200 dark:ring-danger-500/20',
             ],
             default => [
                 'label' => 'No Submission',
-                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+                'class' => 'bg-neutral-100 text-neutral-700 ring-neutral-200 dark:bg-neutral-900 dark:text-neutral-200 dark:ring-neutral-800',
             ],
         };
     }

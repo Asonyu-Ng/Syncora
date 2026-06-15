@@ -12,6 +12,7 @@ use App\Services\ReportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -41,6 +42,8 @@ class AiReportGenerator extends Component
     public string $status = '';
 
     public ?int $activeReportId = null;
+
+    public ?array $activePreview = null;
 
     public string $assistantQuestion = '';
 
@@ -94,6 +97,12 @@ class AiReportGenerator extends Component
 
         $start = Carbon::parse($this->periodStart)->startOfDay();
         $end = Carbon::parse($this->periodEnd)->endOfDay();
+        $readiness = $this->showcaseState($profile->id, $internship, $start, $end);
+
+        if (! $readiness['enough_real_data']) {
+            $this->status = 'Add a few more logbook entries and at least one completed task, or use Generate Sample Preview for a showcase version.';
+            return;
+        }
 
         $logbooks = $this->logbookQuery($profile->id, $internship->id, $start, $end)
             ->limit(60)
@@ -156,20 +165,47 @@ class AiReportGenerator extends Component
         ]);
 
         $this->activeReportId = $report->id;
+        $this->activePreview = null;
         $this->dispatch('open-modal', 'ai-report-preview');
 
         $this->status = 'Done';
     }
 
+    public function generateSamplePreview(): void
+    {
+        $profile = $this->ensureStudentProfile();
+        $internship = $this->internshipId
+            ? Internship::query()->with('companyProfile')->whereKey($this->internshipId)->first()
+            : $this->defaultInternship($profile);
+
+        $context = $this->sampleContext($internship);
+        $content = app(ReportService::class)->generateStudentReportFromContext($context);
+
+        $this->activeReportId = null;
+        $this->activePreview = [
+            'id' => null,
+            'name' => $this->reportTypeLabel($this->reportType) . ' Showcase Preview',
+            'generated' => 'Showcase sample',
+            'source' => 'Showcase sample',
+            'summary' => 'Built from curated sample internship activity for demo purposes.',
+            'content' => $content,
+        ];
+
+        $this->status = 'Sample preview ready.';
+        $this->dispatch('open-modal', 'ai-report-preview');
+    }
+
     public function openReport(int $reportId): void
     {
         $this->activeReportId = $reportId;
+        $this->activePreview = null;
         $this->dispatch('open-modal', 'ai-report-preview');
     }
 
     public function closeReport(): void
     {
         $this->activeReportId = null;
+        $this->activePreview = null;
         $this->dispatch('close-modal', 'ai-report-preview');
     }
 
@@ -203,16 +239,26 @@ class AiReportGenerator extends Component
         $internship = $this->internshipId ? Internship::query()->with('companyProfile')->whereKey($this->internshipId)->first() : null;
         $start = $this->periodStart !== '' ? Carbon::parse($this->periodStart)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();
         $end = $this->periodEnd !== '' ? Carbon::parse($this->periodEnd)->endOfDay() : Carbon::now()->endOfDay();
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
+        $reportsHref = Route::has('student.reports.ai') ? route('student.reports.ai') : '/student/ai-reports';
+        $readiness = $this->showcaseState($profile->id, $internship, $start, $end);
 
         return view('livewire.student.ai-report-generator', [
             'title' => 'AI Report Generator',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Reports', 'href' => $reportsHref],
+                ['label' => 'AI Reports', 'href' => null],
+            ],
             'reportTypes' => $this->reportTypeOptions(),
             'internships' => $internships,
             'includeCounts' => $this->includeCounts($profile->id, $internship?->id, $start, $end),
             'recentReports' => $this->recentReports($profile->id),
             'stats' => $this->reportStats($profile->id, $internship?->id, $start, $end),
-            'activeReport' => $this->activeReportPayload($profile->id),
-            'preview' => $this->previewPayload(),
+            'activeReport' => $this->activePreview ?? $this->activeReportPayload($profile->id),
+            'preview' => $this->previewPayload($readiness, $internship, $start, $end),
+            'readiness' => $readiness,
         ])->extends('layouts.dashboard')->section('content');
     }
 
@@ -249,7 +295,7 @@ class AiReportGenerator extends Component
         return (string) ($match['label'] ?? Str::headline($key));
     }
 
-    private function previewPayload(): array
+    private function previewPayload(array $readiness, ?Internship $internship, Carbon $start, Carbon $end): array
     {
         $typeLabel = $this->reportTypeLabel($this->reportType);
         $include = array_values(array_filter([
@@ -260,10 +306,30 @@ class AiReportGenerator extends Component
             $this->includeFeedback ? 'feedback & evaluations' : null,
         ]));
 
+        $counts = [
+            'logbooks' => $this->includeLogbooks ? $readiness['logbooks'] : 0,
+            'tasks' => $this->includeTasks ? $readiness['completed_tasks'] : 0,
+            'skills' => $this->includeSkills ? max(0, (int) ($readiness['skills'] ?? 0)) : 0,
+        ];
+        $periodLabel = $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
+        $sourceLabel = $readiness['showcase_mode'] ? 'Showcase sample' : 'Real data';
+        $internshipLabel = $internship?->title
+            ? $internship->title . ($internship->companyProfile?->company_name ? ' - ' . $internship->companyProfile->company_name : '')
+            : 'Curated internship sample';
+
         return [
             'title' => $typeLabel,
             'include_label' => count($include) > 0 ? 'Includes: ' . implode(', ', $include) . '.' : null,
-            'body' => 'AI will analyze your selected data and generate a professional report including summary, achievements, skills gained, and recommendations.',
+            'body' => $readiness['showcase_mode']
+                ? 'Preview built from curated sample internship activity so the workspace stays active even with limited student data.'
+                : 'AI will analyze your selected data and generate a professional report including summary, achievements, skills gained, and recommendations.',
+            'source' => $sourceLabel,
+            'period' => $periodLabel,
+            'internship' => $internshipLabel,
+            'counts' => $counts,
+            'summary' => $readiness['showcase_mode']
+                ? 'Uses a few curated entries, task outcomes, and skills to demonstrate the final report experience.'
+                : 'Uses your selected internship activity and currently available records in the chosen period.',
         ];
     }
 
@@ -286,7 +352,88 @@ class AiReportGenerator extends Component
             'id' => $report->id,
             'name' => $report->name,
             'generated' => $report->generated_at?->format('M j, Y') ?? $report->created_at?->format('M j, Y'),
+            'source' => 'Real data',
+            'summary' => 'Generated from your saved internship activity and persisted to your reports.',
             'content' => (string) ($report->content ?? ''),
+        ];
+    }
+
+    private function showcaseState(int $studentProfileId, ?Internship $internship, Carbon $start, Carbon $end): array
+    {
+        $counts = $this->includeCounts($studentProfileId, $internship?->id, $start, $end);
+        $skills = $internship?->id
+            ? collect($this->logbookQuery($studentProfileId, $internship->id, $start, $end)->limit(15)->get(['content']))
+                ->flatMap(fn (Logbook $logbook): array => app(ReportService::class)->extractSkillsFromText((string) $logbook->content))
+                ->unique()
+                ->values()
+                ->count()
+            : 0;
+        $enoughRealData = $internship !== null
+            && $counts['logbooks'] >= 1
+            && $counts['completed_tasks'] >= 1;
+
+        return [
+            'showcase_mode' => ! $enoughRealData,
+            'enough_real_data' => $enoughRealData,
+            'has_internship' => $internship !== null,
+            'logbooks' => $counts['logbooks'],
+            'completed_tasks' => $counts['completed_tasks'],
+            'skills' => $skills,
+            'internship_label' => $internship?->title
+                ? $internship->title . ($internship->companyProfile?->company_name ? ' - ' . $internship->companyProfile->company_name : '')
+                : 'Curated internship sample',
+            'headline' => $enoughRealData ? 'Ready to generate from your data' : 'Showcase mode: preview with sample activity',
+            'message' => $enoughRealData
+                ? 'You already have enough activity in the selected period to generate a strong report from your own records.'
+                : 'Your current activity is still light, so this page can demonstrate the report experience with a curated sample preview.',
+            'missing' => array_values(array_filter([
+                $internship === null ? 'Select an internship' : null,
+                $counts['logbooks'] < 1 ? 'Add at least 1 detailed logbook entry' : null,
+                $counts['completed_tasks'] < 1 ? 'Complete at least 1 task' : null,
+            ])),
+        ];
+    }
+
+    private function sampleContext(?Internship $internship): array
+    {
+        $studentName = auth()->user()?->name ?? 'Student User';
+        $periodStart = $this->periodStart !== '' ? Carbon::parse($this->periodStart)->startOfDay() : Carbon::now()->subDays(14)->startOfDay();
+        $periodEnd = $this->periodEnd !== '' ? Carbon::parse($this->periodEnd)->endOfDay() : Carbon::now()->endOfDay();
+        $internshipTitle = $internship?->title ?? 'Software Engineering Internship';
+        $companyName = $internship?->companyProfile?->company_name ?? 'Syncora Labs';
+        $logbooks = [
+            [
+                'date' => $periodEnd->copy()->subDays(5)->format('M j, Y'),
+                'title' => 'Implemented dashboard analytics cards',
+                'body' => 'Built summary cards, refined spacing, and improved responsive behaviour for the student workspace. Tools: Laravel, Livewire, Tailwind CSS.',
+            ],
+            [
+                'date' => $periodEnd->copy()->subDays(3)->format('M j, Y'),
+                'title' => 'Documented internship workflow updates',
+                'body' => 'Captured process changes, clarified task submission steps, and prepared notes for supervisor review. Tools: Laravel, Blade, Git.',
+            ],
+            [
+                'date' => $periodEnd->copy()->subDay()->format('M j, Y'),
+                'title' => 'Improved profile and settings usability',
+                'body' => 'Adjusted form feedback, dark mode surfaces, and information hierarchy to make the workspace easier to use. Tools: Livewire, Tailwind CSS, UX writing.',
+            ],
+        ];
+        $tasks = [
+            ['title' => 'Refresh student dashboard components', 'status' => 'completed'],
+            ['title' => 'Prepare weekly internship summary', 'status' => 'completed'],
+            ['title' => 'Document UI feedback and fixes', 'status' => 'completed'],
+        ];
+        $skills = ['Laravel', 'Livewire', 'Tailwind Css', 'Blade', 'Git', 'Ui/Ux Review'];
+
+        return [
+            'report_type' => $this->reportTypeLabel($this->reportType),
+            'student_name' => $studentName,
+            'internship_title' => $internshipTitle,
+            'company_name' => $companyName,
+            'period_label' => $periodStart->format('M j, Y') . ' - ' . $periodEnd->format('M j, Y'),
+            'logbooks' => $this->includeLogbooks ? $logbooks : [],
+            'tasks' => $this->includeTasks ? $tasks : [],
+            'skills' => $this->includeSkills ? $skills : [],
         ];
     }
 

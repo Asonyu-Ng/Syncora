@@ -1,16 +1,29 @@
 <div class="space-y-8">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Company Dashboard</h1>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Intern progress stubs</p>
-        </div>
+    <div class="overflow-hidden rounded-[28px] border border-neutral-200 bg-gradient-to-r from-white via-white to-primary-50/60 shadow-card">
+        <div class="grid gap-6 px-6 py-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+            <div class="min-w-0">
+                <span class="inline-flex items-center rounded-full border border-primary-100 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-soft">
+                    Company dashboard
+                </span>
+                <h1 class="mt-4 text-3xl font-semibold tracking-tight text-neutral-950">Run internship hiring and follow-up from one operational view.</h1>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-neutral-600">
+                    Track open roles, applicant activity, and intern progress while keeping the next company actions visible at the top of the workspace.
+                </p>
+            </div>
 
-        <a
-            href="{{ route('company.internships.create') }}"
-            class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
-        >
-            Post Internship
-        </a>
+            <div class="flex flex-col justify-between gap-4 rounded-3xl border border-neutral-200 bg-white/90 p-5 shadow-soft">
+                <div>
+                    <div class="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Hiring focus</div>
+                    <p class="mt-2 text-sm leading-6 text-neutral-600">Use this dashboard as the first stop for posting roles, reviewing applicants, and checking intern delivery signals.</p>
+                </div>
+                <a
+                    href="{{ route('company.internships.create') }}"
+                    class="inline-flex h-11 items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500"
+                >
+                    Post internship
+                </a>
+            </div>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -25,19 +38,19 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a href="{{ route('company.internships.index') }}" class="px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Internship Management</div>
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">List/edit stub</div>
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Review published roles and track response volume</div>
                 </a>
                 <a href="{{ route('company.applicants.index') }}" class="px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Applicants</div>
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Accept/reject stub</div>
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Review candidates and move decisions forward</div>
                 </a>
                 <a href="{{ route('company.interns.index') }}" class="px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Active Interns</div>
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">List stub</div>
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Monitor current placements and progress</div>
                 </a>
                 <a href="{{ route('company.tasks.index') }}" class="px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Task Assignment</div>
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Create/list stub</div>
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Review submissions and give feedback</div>
                 </a>
             </div>
         </x-widget>
@@ -83,4 +96,3 @@
         </div>
     </x-widget>
 </div>
-

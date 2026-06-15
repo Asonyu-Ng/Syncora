@@ -1,7 +1,30 @@
-<div class="space-y-6">
-    <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Company Profile</h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Placeholder</p>
+<div class="space-y-8">
+    <div class="overflow-hidden rounded-[28px] border border-neutral-200 bg-gradient-to-r from-white via-white to-primary-50/60 shadow-card">
+        <div class="grid gap-6 px-6 py-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+            <div class="min-w-0">
+                <span class="inline-flex items-center rounded-full border border-primary-100 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-soft">
+                    Company profile
+                </span>
+                <h1 class="mt-4 text-3xl font-semibold tracking-tight text-neutral-950">Present a clear employer identity across your internship workspace.</h1>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-neutral-600">
+                    Keep your organisation details easy to scan so applicants, interns, and reviewers always see the right company context.
+                </p>
+            </div>
+
+            <div class="rounded-3xl border border-neutral-200 bg-white/90 p-5 shadow-soft">
+                <div class="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Profile health</div>
+                <div class="mt-4 rounded-2xl border border-neutral-200 bg-white px-4 py-4">
+                    <div class="flex items-center justify-between text-sm font-semibold text-neutral-700">
+                        <span>Completion</span>
+                        <span class="text-neutral-950">{{ $company['profileCompletion'] }}%</span>
+                    </div>
+                    <div class="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100">
+                        <div class="h-2 rounded-full bg-primary-600" style="width: {{ $company['profileCompletion'] }}%"></div>
+                    </div>
+                    <p class="mt-3 text-sm leading-6 text-neutral-600">Review company identity and communication settings together so your workspace stays current and credible.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -28,26 +51,10 @@
                     </div>
 
                     <a href="{{ route('company.settings') }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">
-                        Go to settings
+                        Open company settings
                     </a>
-                </div>
-            </x-widget>
-        </div>
-
-        <div class="lg:col-span-1">
-            <x-widget title="Profile Completion">
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between text-sm text-gray-700 dark:text-gray-200">
-                        <div>Completion</div>
-                        <div class="font-semibold">{{ $company['profileCompletion'] }}%</div>
-                    </div>
-                    <div class="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                        <div class="h-2 bg-indigo-600 rounded-full" style="width: {{ $company['profileCompletion'] }}%"></div>
-                    </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">This is placeholder data.</div>
                 </div>
             </x-widget>
         </div>
     </div>
 </div>
-

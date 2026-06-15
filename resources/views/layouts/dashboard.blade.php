@@ -7,6 +7,22 @@
 
     <title>{{ $title ?? 'Syncora' }}</title>
 
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = stored ? stored : (prefersDark ? 'dark' : 'light');
+                var root = document.documentElement;
+                if (theme === 'dark') {
+                    root.classList.add('dark');
+                } else {
+                    root.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +30,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
+<body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100">
     <div
         x-data="{ sidebarOpen: false }"
         @toggle-sidebar.window="sidebarOpen = !sidebarOpen"

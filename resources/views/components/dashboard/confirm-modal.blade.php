@@ -10,9 +10,9 @@
 
 <x-modal :name="$name">
     <div x-data="{ confirm() { $dispatch(@js($confirmEvent), Object.assign({ modal: @js($name) }, @js($confirmPayload))); $dispatch('close-modal', @js($name)); } }" class="p-6">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $title }}</h2>
+        <h2 class="text-lg font-semibold text-neutral-900 dark:text-neutral-50">{{ $title }}</h2>
 
-        <div class="mt-3 text-sm text-gray-600 dark:text-gray-300">
+        <div class="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
             @if(trim($slot) !== '')
                 {{ $slot }}
             @else

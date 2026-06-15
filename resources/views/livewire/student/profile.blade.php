@@ -1,45 +1,51 @@
-<div class="space-y-8">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">My Profile</h1>
-            <p class="mt-2 text-sm text-neutral-600">View and manage your personal information and academic details.</p>
-        </div>
+<div class="space-y-8 dark:[&_.text-neutral-900]:text-neutral-50 dark:[&_.text-neutral-700]:text-neutral-200 dark:[&_.text-neutral-600]:text-neutral-300 dark:[&_.text-neutral-500]:text-neutral-400 dark:[&_.text-neutral-400]:text-neutral-500">
+    <x-dashboard.page-header
+        badge="Student profile"
+        title="My Profile"
+        description="Review the details used across applications, task submissions, and your internship workflow."
+    >
+        <x-slot:actions>
+            <button
+                type="button"
+                wire:click="{{ $tab === 'academic' ? 'openEditAcademicInfo' : 'openEditProfile' }}"
+                class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25 dark:border-primary-500/30 dark:bg-neutral-950 dark:text-primary-200 dark:hover:bg-neutral-900"
+            >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l9.932-9.931z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 7.125L16.875 4.5" />
+                </svg>
+                {{ $tab === 'academic' ? 'Edit Academic Info' : 'Edit Profile' }}
+            </button>
+        </x-slot:actions>
+    </x-dashboard.page-header>
 
-        <button type="button" wire:click="{{ $tab === 'academic' ? 'openEditAcademicInfo' : 'openEditProfile' }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-primary-200 bg-white px-5 text-sm font-semibold text-primary-700 shadow-soft transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l9.932-9.931z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 7.125L16.875 4.5" />
-            </svg>
-            {{ $tab === 'academic' ? 'Edit Academic Info' : 'Edit Profile' }}
-        </button>
-    </div>
-
-    <div class="flex overflow-x-auto border-b border-neutral-200 pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
+    <div class="flex overflow-x-auto border-b border-neutral-200 pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 dark:border-neutral-800">
         @foreach($tabs as $entry)
             @php $active = $tab === $entry['key']; @endphp
 
             <button
                 type="button"
                 wire:click="$set('tab', '{{ $entry['key'] }}')"
-                class="mr-6 whitespace-nowrap border-b-2 pb-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25 {{ $active ? 'border-primary-600 text-primary-700' : 'border-transparent text-neutral-600 hover:text-neutral-900' }}"
+                class="mr-6 whitespace-nowrap border-b-2 pb-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25 {{ $active ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-200' : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100' }}"
             >
                 {{ $entry['label'] }}
             </button>
         @endforeach
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
+    <x-dashboard.two-column>
+        <x-slot:main>
+            <div class="space-y-6">
             @if($tab === 'profile')
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="p-5 sm:p-6">
                         <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                             <div class="flex min-w-0 items-start gap-4">
                                 <div class="relative">
-                                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-100 text-lg font-semibold text-neutral-700">
+                                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-100 text-lg font-semibold text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200">
                                         {{ Str::of($profileCard['name'])->trim()->substr(0, 1)->upper() }}
                                     </div>
-                                    <button type="button" class="absolute -bottom-2 -right-2 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft">
+                                    <button type="button" class="absolute -bottom-2 -right-2 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400" aria-label="Update profile photo">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h2l2-2h6l2 2h2a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -49,16 +55,16 @@
 
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <div class="text-lg font-semibold text-neutral-900">{{ $profileCard['name'] }}</div>
-                                        <span class="inline-flex items-center rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 ring-1 ring-inset ring-success-100">
+                                        <div class="text-lg font-semibold text-neutral-900 dark:text-neutral-50">{{ $profileCard['name'] }}</div>
+                                        <span class="inline-flex items-center rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 ring-1 ring-inset ring-success-100 dark:bg-success-500/10 dark:text-success-200 dark:ring-success-500/20">
                                             {{ $profileCard['status'] }}
                                         </span>
                                     </div>
 
-                                    <div class="mt-3 space-y-2 text-sm font-semibold text-neutral-700">
+                                    <div class="mt-3 space-y-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                                         @if($profileCard['email'])
                                             <div class="flex items-center gap-2">
-                                                <svg class="h-4 w-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="h-4 w-4 text-neutral-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l9 6 9-6v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8l-9 6-9-6 9-6 9 6z" />
                                                 </svg>
@@ -67,7 +73,7 @@
                                         @endif
                                         @if($profileCard['phone'])
                                             <div class="flex items-center gap-2">
-                                                <svg class="h-4 w-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="h-4 w-4 text-neutral-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.5 4.5a1 1 0 01-.502 1.21l-2.257 1.129a11.042 11.042 0 005.516 5.516l1.129-2.257a1 1 0 011.21-.502l4.5 1.5A1 1 0 0121 17.72V21a2 2 0 01-2 2h-1C9.163 23 1 14.837 1 4V3a2 2 0 012-2z" />
                                                 </svg>
                                                 <span class="truncate">{{ $profileCard['phone'] }}</span>
@@ -75,7 +81,7 @@
                                         @endif
                                         @if($profileCard['location'])
                                             <div class="flex items-center gap-2">
-                                                <svg class="h-4 w-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="h-4 w-4 text-neutral-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11a3 3 0 100-6 3 3 0 000 6z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 11c0 7-7.5 11-7.5 11S4.5 18 4.5 11a7.5 7.5 0 1115 0z" />
                                                 </svg>
@@ -108,7 +114,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <h2 class="text-sm font-semibold text-neutral-900">About Me</h2>
@@ -123,7 +129,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4 border-b border-neutral-200 px-5 py-4 sm:px-6">
                         <h2 class="text-sm font-semibold text-neutral-900">Contact Information</h2>
                         <button type="button" wire:click="openEditProfile" class="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-700 shadow-soft transition hover:bg-neutral-50">
@@ -154,7 +160,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4 border-b border-neutral-200 px-5 py-4 sm:px-6">
                         <h2 class="text-sm font-semibold text-neutral-900">Social Links</h2>
                         <button type="button" wire:click="openEditProfile" class="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-700 shadow-soft transition hover:bg-neutral-50">
@@ -181,7 +187,7 @@
                     </div>
                 </div>
             @elseif($tab === 'academic')
-                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+                <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="px-5 py-4 sm:px-6 border-b border-neutral-200">
                         <h2 class="text-sm font-semibold text-neutral-900">Academic Details</h2>
                         <p class="mt-1 text-sm text-neutral-600">Your academic information as registered by your institution.</p>
@@ -325,8 +331,8 @@
                     </div>
                 </div>
             @elseif($tab === 'documents')
-                <div class="rounded-2xl border border-dashed border-neutral-200 bg-white p-10 text-center shadow-card">
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-500">
+                <div class="rounded-2xl border border-dashed border-neutral-200 bg-white p-10 text-center shadow-card dark:border-neutral-800 dark:bg-neutral-950">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 6H7a2 2 0 01-2-2V4a2 2 0 012-2h7l5 5v13a2 2 0 01-2 2z" />
                         </svg>
@@ -335,8 +341,8 @@
                     <p class="mt-2 text-sm text-neutral-600">Upload verification documents and certificates here.</p>
                 </div>
             @else
-                <div class="rounded-2xl border border-dashed border-neutral-200 bg-white p-10 text-center shadow-card">
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-500">
+                <div class="rounded-2xl border border-dashed border-neutral-200 bg-white p-10 text-center shadow-card dark:border-neutral-800 dark:bg-neutral-950">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
                         </svg>
@@ -345,11 +351,12 @@
                     <p class="mt-2 text-sm text-neutral-600">Set your notification and dashboard preferences.</p>
                 </div>
             @endif
-        </div>
+            </div>
+        </x-slot:main>
 
-        <aside class="space-y-6 lg:col-span-4">
+        <x-slot:aside>
             @if($tab === 'academic')
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <h2 class="text-sm font-semibold text-neutral-900">Academic Summary</h2>
                     <div class="mt-5 space-y-4 text-sm font-semibold">
                         <div class="flex items-center justify-between gap-4">
@@ -428,7 +435,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start justify-between gap-4">
                         <h2 class="text-sm font-semibold text-neutral-900">Academic Achievements</h2>
                     </div>
@@ -449,7 +456,7 @@
                                         : 'text-primary-700 bg-primary-50');
                             @endphp
 
-                            <div class="flex items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft">
+                            <div class="flex items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-soft dark:border-neutral-800 dark:bg-neutral-950">
                                 <div class="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl {{ $icon }}">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15l4-4m0 0l-4-4m4 4H8" />
@@ -474,7 +481,7 @@
                     </div>
                 </div>
             @else
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -510,7 +517,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex items-start gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-700">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -527,7 +534,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <h2 class="text-sm font-semibold text-neutral-900">Profile Completion</h2>
                     <div class="mt-6 flex items-center gap-6">
                         <div class="relative h-28 w-28 shrink-0 rounded-full" style="background: {{ $completion['style'] }};">
@@ -562,8 +569,8 @@
                     </div>
                 </div>
             @endif
-        </aside>
-    </div>
+        </x-slot:aside>
+    </x-dashboard.two-column>
 
     <x-modal name="student-profile-edit" focusable maxWidth="2xl">
         <div class="p-6">
@@ -572,7 +579,7 @@
                     <h2 class="text-lg font-semibold text-neutral-900">Edit profile</h2>
                     <p class="mt-2 text-sm text-neutral-600">Update your personal and academic details.</p>
                 </div>
-                <button type="button" x-on:click="$dispatch('close-modal', 'student-profile-edit')" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900">
+                <button type="button" x-on:click="$dispatch('close-modal', 'student-profile-edit')" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900" aria-label="Close modal">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -584,7 +591,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-neutral-900" for="profile-name">Full name</label>
                         <div class="mt-2">
-                            <input id="profile-name" type="text" wire:model.defer="name" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="profile-name" type="text" wire:model.defer="name" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
                         </div>
                     </div>
@@ -592,7 +599,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-neutral-900" for="profile-email">Email</label>
                         <div class="mt-2">
-                            <input id="profile-email" type="email" wire:model.defer="email" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="profile-email" type="email" wire:model.defer="email" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
                     </div>
@@ -600,7 +607,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-neutral-900" for="profile-phone">Phone</label>
                         <div class="mt-2">
-                            <input id="profile-phone" type="text" wire:model.defer="phone" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="profile-phone" type="text" wire:model.defer="phone" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                         </div>
                     </div>
@@ -609,7 +616,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-neutral-900" for="profile-address">Address</label>
                     <div class="mt-2">
-                        <input id="profile-address" type="text" wire:model.defer="address" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                        <input id="profile-address" type="text" wire:model.defer="address" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                         <x-input-error :messages="$errors->get('address')" class="mt-2" />
                     </div>
                 </div>
@@ -618,14 +625,14 @@
                     <div class="sm:col-span-1">
                         <label class="block text-sm font-semibold text-neutral-900" for="profile-level">Level</label>
                         <div class="mt-2">
-                            <input id="profile-level" type="text" wire:model.defer="level" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="profile-level" type="text" wire:model.defer="level" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                             <x-input-error :messages="$errors->get('level')" class="mt-2" />
                         </div>
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-semibold text-neutral-900" for="profile-department">Department</label>
                         <div class="mt-2">
-                            <input id="profile-department" type="text" wire:model.defer="department" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                            <input id="profile-department" type="text" wire:model.defer="department" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                             <x-input-error :messages="$errors->get('department')" class="mt-2" />
                         </div>
                     </div>
@@ -634,7 +641,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-neutral-900" for="profile-university">Institution</label>
                     <div class="mt-2">
-                        <input id="profile-university" type="text" wire:model.defer="university" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20" />
+                        <input id="profile-university" type="text" wire:model.defer="university" class="h-11 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500" />
                         <x-input-error :messages="$errors->get('university')" class="mt-2" />
                     </div>
                 </div>
@@ -642,14 +649,14 @@
                 <div>
                     <label class="block text-sm font-semibold text-neutral-900" for="profile-bio">About me</label>
                     <div class="mt-2">
-                        <textarea id="profile-bio" rows="5" wire:model.defer="bio" class="w-full rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"></textarea>
+                        <textarea id="profile-bio" rows="5" wire:model.defer="bio" class="w-full rounded-xl border border-neutral-200 bg-white px-3 py-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500"></textarea>
                         <x-input-error :messages="$errors->get('bio')" class="mt-2" />
                     </div>
                 </div>
             </div>
 
             <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <button type="button" x-on:click="$dispatch('close-modal', 'student-profile-edit')" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50">
+                <button type="button" x-on:click="$dispatch('close-modal', 'student-profile-edit')" class="inline-flex h-11 items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 text-sm font-semibold text-neutral-900 shadow-soft transition hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-900">
                     Cancel
                 </button>
                 <button type="button" wire:click="saveProfile" class="inline-flex h-11 items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">

@@ -1,34 +1,35 @@
 @php
     $statusPills = [
-        'pending' => 'bg-warning-50 text-warning-700 ring-warning-100',
-        'applied' => 'bg-warning-50 text-warning-700 ring-warning-100',
-        'under_review' => 'bg-info-50 text-info-700 ring-info-100',
-        'accepted' => 'bg-success-50 text-success-700 ring-success-100',
-        'rejected' => 'bg-danger-50 text-danger-700 ring-danger-100',
-        'withdrawn' => 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+        'pending' => 'bg-warning-50 text-warning-700 ring-warning-100 dark:bg-warning-500/10 dark:text-warning-200 dark:ring-warning-500/20',
+        'applied' => 'bg-warning-50 text-warning-700 ring-warning-100 dark:bg-warning-500/10 dark:text-warning-200 dark:ring-warning-500/20',
+        'under_review' => 'bg-info-50 text-info-700 ring-info-100 dark:bg-info-500/10 dark:text-info-200 dark:ring-info-500/20',
+        'accepted' => 'bg-success-50 text-success-700 ring-success-100 dark:bg-success-500/10 dark:text-success-200 dark:ring-success-500/20',
+        'rejected' => 'bg-danger-50 text-danger-700 ring-danger-100 dark:bg-danger-500/10 dark:text-danger-200 dark:ring-danger-500/20',
+        'withdrawn' => 'bg-neutral-100 text-neutral-700 ring-neutral-200 dark:bg-neutral-500/10 dark:text-neutral-200 dark:ring-neutral-500/20',
     ];
 @endphp
 
-<div class="space-y-8">
+<div class="space-y-8 dark:[&_.text-neutral-900]:text-neutral-50 dark:[&_.text-neutral-700]:text-neutral-200 dark:[&_.text-neutral-600]:text-neutral-300 dark:[&_.text-neutral-500]:text-neutral-400 dark:[&_.text-neutral-400]:text-neutral-500">
     @if(session()->has('message'))
-        <div class="rounded-2xl border border-primary-100 bg-primary-50 px-5 py-4 text-sm font-semibold text-primary-800 shadow-soft">
+        <div class="rounded-2xl border border-primary-100 bg-primary-50 px-5 py-4 text-sm font-semibold text-primary-800 shadow-soft dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-200">
             {{ session('message') }}
         </div>
     @endif
 
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">Applications</h1>
-            <p class="mt-2 text-sm text-neutral-600">Track your internship applications, stay on top of updates, and take action when needed.</p>
-        </div>
-
-        <a href="{{ route('student.internships.search') }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
-            </svg>
-            Find Internships
-        </a>
-    </div>
+    <x-dashboard.page-header
+        badge="Student applications"
+        title="Applications"
+        description="Review statuses, spot stalled submissions, and move directly from search to follow-up without losing context."
+    >
+        <x-slot:actions>
+            <a href="{{ route('student.internships.search') }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+                </svg>
+                Find internships
+            </a>
+        </x-slot:actions>
+    </x-dashboard.page-header>
 
     <div class="flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
         @foreach($statusTabs as $tab)
@@ -36,8 +37,8 @@
                 $active = $status === $tab['key'];
                 $tabClasses = $active
                     ? 'bg-primary-600 text-white'
-                    : 'bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-50';
-                $countClasses = $active ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-700';
+                    : 'bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-950 dark:text-neutral-200 dark:border-neutral-800 dark:hover:bg-neutral-900';
+                $countClasses = $active ? 'bg-white/20 text-white' : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200';
             @endphp
 
             <button
@@ -51,19 +52,20 @@
         @endforeach
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
-            <div class="rounded-2xl border border-neutral-200 bg-white shadow-card">
-                <div class="flex flex-col gap-3 border-b border-neutral-200 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+    <x-dashboard.two-column>
+        <x-slot:main>
+            <div class="space-y-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white shadow-card dark:border-neutral-800 dark:bg-neutral-950">
+                <div class="flex flex-col gap-3 border-b border-neutral-200 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 dark:border-neutral-800">
                     <div class="relative w-full sm:max-w-sm">
-                        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
                         </svg>
                         <input
                             type="search"
                             wire:model.live.debounce.300ms="search"
                             placeholder="Search by company or role..."
-                            class="h-11 w-full rounded-xl border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-sm text-neutral-900 shadow-soft placeholder:text-neutral-400 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
+                            class="h-11 w-full rounded-xl border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-sm text-neutral-900 shadow-soft placeholder:text-neutral-400 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-100 dark:placeholder:text-neutral-500"
                         />
                     </div>
 
@@ -72,7 +74,7 @@
                         <select
                             id="applications-per-page"
                             wire:model.live="perPage"
-                            class="h-11 rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
+                            class="h-11 rounded-xl border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 shadow-soft focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
                         >
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -125,7 +127,7 @@
                                     </button>
                                 @endif
 
-                                <x-dropdown align="right" width="48" contentClasses="py-1 bg-white">
+                                <x-dropdown align="right" width="48" contentClasses="py-1 bg-white dark:bg-neutral-950">
                                     <x-slot name="trigger">
                                         <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-700 transition hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25" aria-label="More actions">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +207,7 @@
                                     </button>
                                 @endif
 
-                                <x-dropdown align="right" width="48" contentClasses="py-1 bg-white">
+                                <x-dropdown align="right" width="48" contentClasses="py-1 bg-white dark:bg-neutral-950">
                                     <x-slot name="trigger">
                                         <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-700 transition hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25" aria-label="More actions">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,27 +255,28 @@
             <div class="pt-2">
                 {{ $applications->withQueryString()->onEachSide(1)->links() }}
             </div>
-        </div>
+            </div>
+        </x-slot:main>
 
-        <aside class="space-y-6 lg:col-span-4">
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+        <x-slot:aside>
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-semibold text-neutral-900">Application Summary</h2>
                         <p class="mt-1 text-sm text-neutral-600">A quick snapshot of where things stand.</p>
                     </div>
-                    <div class="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">{{ $statusCounts['all'] ?? 0 }} total</div>
+                    <div class="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-500/10 dark:text-primary-200">{{ $statusCounts['all'] ?? 0 }} total</div>
                 </div>
 
                 <div class="mt-5 space-y-3">
-                    <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-semibold text-neutral-900">
+                    <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-semibold text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900/60">
                         <span class="flex items-center gap-2">
                             <span class="h-2.5 w-2.5 rounded-full bg-warning-500"></span>
                             Pending
                         </span>
-                        <span class="inline-flex h-6 items-center rounded-full bg-white px-2 text-xs font-semibold text-neutral-700 shadow-soft">{{ $statusCounts['pending'] ?? 0 }}</span>
+                        <span class="inline-flex h-6 items-center rounded-full bg-white px-2 text-xs font-semibold text-neutral-700 shadow-soft dark:bg-neutral-950 dark:text-neutral-200">{{ $statusCounts['pending'] ?? 0 }}</span>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-900">
+                    <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-900 dark:border-neutral-800 dark:bg-neutral-950">
                         <span class="flex items-center gap-2">
                             <span class="h-2.5 w-2.5 rounded-full bg-info-500"></span>
                             Under Review
@@ -331,6 +334,6 @@
                     Find new internships
                 </a>
             </div>
-        </aside>
-    </div>
+        </x-slot:aside>
+    </x-dashboard.two-column>
 </div>

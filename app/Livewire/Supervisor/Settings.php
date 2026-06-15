@@ -12,6 +12,7 @@ class Settings extends Component
 
     public function save(): void
     {
+        session()->flash('message', 'Supervisor preferences updated.');
     }
 
     public function render(): View

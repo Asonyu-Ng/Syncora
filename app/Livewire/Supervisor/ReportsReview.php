@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -138,6 +139,8 @@ class ReportsReview extends Component
     public function render(): View
     {
         $supervisorProfile = $this->ensureSupervisorProfile();
+        $dashboardHref = Route::has('supervisor.dashboard') ? route('supervisor.dashboard') : '/supervisor/dashboard';
+        $reportsHref = Route::has('supervisor.reports.index') ? route('supervisor.reports.index') : '/supervisor/reports';
 
         $internships = Internship::query()
             ->where('supervisor_profile_id', $supervisorProfile->id)
@@ -159,6 +162,12 @@ class ReportsReview extends Component
 
         return view('livewire.supervisor.reports-review', [
             'title' => 'Reports Review',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Supervisor Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Reports', 'href' => $reportsHref],
+                ['label' => 'Reports Review', 'href' => null],
+            ],
             'tabs' => $tabs,
             'internships' => $internships,
             'companies' => $companies,

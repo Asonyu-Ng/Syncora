@@ -10,6 +10,7 @@ use App\Models\StudentProfile;
 use App\Services\InternshipService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -198,8 +199,17 @@ class InternshipSearch extends Component
                 ->pluck('internship_id')
                 ->all();
 
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
+        $searchHref = Route::has('student.internships.search') ? route('student.internships.search') : '/student/internships';
+
         return view('livewire.student.internship-search', [
             'title' => 'Internship Search',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Internships', 'href' => $searchHref],
+                ['label' => 'Search', 'href' => null],
+            ],
             'results' => $results,
             'savedInternshipIds' => $savedInternshipIds,
             'appliedInternshipIds' => $appliedInternshipIds,

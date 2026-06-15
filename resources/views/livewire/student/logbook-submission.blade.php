@@ -1,22 +1,24 @@
-<div class="space-y-8">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-3xl font-semibold text-neutral-900 tracking-tight">My Logbook</h1>
-            <p class="mt-2 text-sm text-neutral-600">Document your daily activities and track your internship journey.</p>
-        </div>
+<div class="space-y-8 dark:[&_.text-neutral-900]:text-neutral-50 dark:[&_.text-neutral-700]:text-neutral-200 dark:[&_.text-neutral-600]:text-neutral-300 dark:[&_.text-neutral-500]:text-neutral-400 dark:[&_.text-neutral-400]:text-neutral-500">
+    <x-dashboard.page-header
+        badge="Internship logbook"
+        title="Logbook"
+        description="Capture daily activity, maintain a clean submission history, and make it easier for supervisors to review progress."
+    >
+        <x-slot:actions>
+            <button type="button" wire:click="openNewEntryModal" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                New log entry
+            </button>
+        </x-slot:actions>
+    </x-dashboard.page-header>
 
-        <button type="button" wire:click="openNewEntryModal" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            New Log Entry
-        </button>
-    </div>
-
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
+    <x-dashboard.two-column>
+        <x-slot:main>
+            <div class="space-y-6">
             @if($internshipCard)
-                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+                <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div class="flex min-w-0 items-center gap-4">
                             <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
@@ -113,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
+            <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="divide-y divide-neutral-100">
                     @forelse($entries as $entry)
                         <div class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
@@ -161,7 +163,7 @@
                                         {{ $entry['action_label'] }}
                                     </button>
 
-                                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-white">
+                                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-white dark:bg-neutral-950">
                                         <x-slot name="trigger">
                                             <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-500 shadow-soft transition hover:bg-neutral-50 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25">
                                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,10 +235,11 @@
                     </button>
                 </div>
             </div>
-        </div>
+            </div>
+        </x-slot:main>
 
-        <aside class="space-y-6 lg:col-span-4">
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+        <x-slot:aside>
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-semibold text-neutral-900">Weekly Progress</h2>
@@ -274,7 +277,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <h2 class="text-sm font-semibold text-neutral-900">Logbook Tips</h2>
 
                 <div class="mt-4 space-y-4">
@@ -316,7 +319,7 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6">
+            <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-card sm:p-6 dark:border-neutral-800 dark:bg-neutral-950">
                 <div class="flex items-start justify-between gap-3">
                     <h2 class="text-sm font-semibold text-neutral-900">Logbook Stats</h2>
                     <a href="{{ route('student.reports.ai') }}" class="text-sm font-semibold text-primary-700 hover:text-primary-800">View Report</a>
@@ -360,8 +363,8 @@
                     </div>
                 </div>
             </div>
-        </aside>
-    </div>
+        </x-slot:aside>
+    </x-dashboard.two-column>
 
     <x-modal name="logbook-entry" focusable>
         <div class="p-6">
@@ -450,7 +453,7 @@
                 </button>
             </div>
 
-            <div class="mt-5 rounded-2xl border border-neutral-200 bg-white p-5 text-sm font-semibold text-neutral-700 whitespace-pre-line">
+            <div class="mt-5 rounded-2xl border border-neutral-200 bg-white p-5 text-sm font-semibold text-neutral-700 whitespace-pre-line dark:border-neutral-800 dark:bg-neutral-950">
                 {{ $details['body'] ?? '' }}
             </div>
 

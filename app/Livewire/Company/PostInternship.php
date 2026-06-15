@@ -5,6 +5,7 @@ namespace App\Livewire\Company;
 use App\Models\User;
 use App\Services\InternshipService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -116,8 +117,17 @@ class PostInternship extends Component
 
     public function render(): View
     {
+        $dashboardHref = Route::has('company.dashboard') ? route('company.dashboard') : '/company/dashboard';
+        $internshipsHref = Route::has('company.internships.index') ? route('company.internships.index') : '/company/internships';
+
         return view('livewire.company.post-internship', [
             'title' => 'Post New Internship',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Company Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Internships', 'href' => $internshipsHref],
+                ['label' => 'Post New Internship', 'href' => null],
+            ],
         ])->extends('layouts.dashboard')->section('content');
     }
 }

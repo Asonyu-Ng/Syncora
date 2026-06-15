@@ -7,6 +7,7 @@ use App\Models\StudentProfile;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -78,9 +79,15 @@ class Applications extends Component
     {
         $profile = $this->ensureStudentProfile();
         $counts = $this->statusCounts($profile->id);
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
 
         return view('livewire.student.applications', [
             'title' => 'Applications',
+            'breadcrumbs' => [
+                ['label' => 'Dashboards', 'href' => '/__dashboards'],
+                ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+                ['label' => 'Applications', 'href' => null],
+            ],
             'applications' => $this->applicationsPaginator($profile->id),
             'statusTabs' => $this->statusTabs($counts),
             'statusCounts' => $counts,

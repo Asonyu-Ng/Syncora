@@ -5,6 +5,7 @@ namespace App\Livewire\Student;
 use App\Models\StudentProfile;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
@@ -104,9 +105,22 @@ class Settings extends Component
     {
         $user = auth()->user();
         $profile = $this->ensureStudentProfile();
+        $dashboardHref = Route::has('student.dashboard') ? route('student.dashboard') : '/student/dashboard';
+        $settingsHref = Route::has('student.settings') ? route('student.settings') : '/student/settings';
+        $tabLabel = collect($this->tabs())->firstWhere('key', $this->tab)['label'] ?? null;
+        $breadcrumbs = [
+            ['label' => 'Dashboards', 'href' => '/__dashboards'],
+            ['label' => 'Student Dashboard', 'href' => $dashboardHref],
+            ['label' => 'Settings', 'href' => $this->tab === 'general' ? null : $settingsHref],
+        ];
+
+        if ($this->tab !== 'general' && $tabLabel) {
+            $breadcrumbs[] = ['label' => $tabLabel, 'href' => null];
+        }
 
         return view('livewire.student.settings', [
             'title' => 'Settings',
+            'breadcrumbs' => $breadcrumbs,
             'tabs' => $this->tabs(),
             'profileCard' => [
                 'name' => $user?->name,

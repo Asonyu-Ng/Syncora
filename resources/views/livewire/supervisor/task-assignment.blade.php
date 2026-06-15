@@ -21,23 +21,35 @@
 @endphp
 
 <div class="space-y-6">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div class="min-w-0">
-            <h1 class="text-2xl font-semibold text-neutral-900 sm:text-3xl">Tasks</h1>
-            <p class="mt-2 text-sm text-neutral-600">Create, assign and manage tasks for your interns.</p>
-        </div>
+    <div class="overflow-hidden rounded-[28px] border border-neutral-200 bg-gradient-to-r from-white via-white to-primary-50/60 shadow-card">
+        <div class="grid gap-6 px-6 py-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+            <div class="min-w-0">
+                <span class="inline-flex items-center rounded-full border border-primary-100 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-soft">
+                    Task assignment
+                </span>
+                <h1 class="mt-4 text-3xl font-semibold tracking-tight text-neutral-950">Create, assign, and follow up on intern work with less friction.</h1>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-neutral-600">
+                    Manage new tasks, monitor progress, and keep submissions connected to the right student and internship context.
+                </p>
+            </div>
 
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-            <button
-                type="button"
-                wire:click="openCreate"
-                class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25"
-            >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Create New Task
-            </button>
+            <div class="flex flex-col justify-between gap-4 rounded-3xl border border-neutral-200 bg-white/90 p-5 shadow-soft">
+                <div>
+                    <div class="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Task queue</div>
+                    <div class="mt-2 text-2xl font-semibold tracking-tight text-neutral-950">{{ $tasks->count() }}</div>
+                    <p class="mt-2 text-sm leading-6 text-neutral-600">Visible in the current filtered view.</p>
+                </div>
+                <button
+                    type="button"
+                    wire:click="openCreate"
+                    class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/25"
+                >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create new task
+                </button>
+            </div>
         </div>
     </div>
 
@@ -210,7 +222,7 @@
                         </svg>
                     </div>
                     <h3 class="mt-4 text-base font-semibold text-neutral-900">Task Templates</h3>
-                    <p class="mt-2 text-sm font-semibold text-neutral-600">Templates are coming soon.</p>
+                    <p class="mt-2 text-sm font-semibold text-neutral-600">Build reusable task patterns here as your supervision workflow matures.</p>
                     <button
                         type="button"
                         wire:click="manageTemplates"
@@ -218,6 +230,7 @@
                     >
                         Manage Templates
                     </button>
+                    <p class="mt-4 text-sm leading-6 text-neutral-500">This space is positioned for reusable task structures instead of feeling like an unfinished utility area.</p>
                 </div>
             @else
                 <div class="rounded-2xl border border-neutral-200 bg-white shadow-card overflow-hidden">
